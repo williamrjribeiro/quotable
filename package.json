@@ -18,6 +18,7 @@
   "author": "William R. J. Ribeiro - @bill_bsb",
   "license": "MIT",
   "dependencies": {
+    "angular": "^1.5.3",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "morgan": "^1.7.0",
@@ -37,6 +38,7 @@
     "gulp-uglify": "^1.5.3",
     "gulp-watch": "^4.3.5",
     "rimraf": "^2.5.2",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.1.5",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
