@@ -1,9 +1,9 @@
 import gulp from 'gulp';
 import shell from 'gulp-shell';
+import watch from 'gulp-watch';
+import gls from 'gulp-live-server';
 import rimraf from 'rimraf';
 import run from 'run-sequence';
-import watch from 'gulp-watch';
-import server from 'gulp-live-server';
 import browserify from 'browserify';
 import source from "vinyl-source-stream";
 
@@ -11,24 +11,24 @@ const PATHS = {
     server: {
         dist:   './dist',
         src:    './server',
-        main:   './server/index.js'
+        main:   './dist/index.js'
     },
     client: {
         dist:   './public',
         src:    './client',
-        main:   './client/js/app.js'
+        main:   './client/app.js'
     },
-    js: '/**/*.js',
-    html: '/**/*.html'
+    js:     '/**/*.js',
+    html:   '/**/*.html',
+    all:    '/**/*.*'
 };
 
 gulp.task('default', done => {
-    //run('server', 'build', 'watch', done);
-    run('clean',['build-server','transpile'],'copy-client','restart','watch', done);
+    run('clean',['build-server','transpile'],'copy-client','watch', done);
 });
 
 gulp.task('build-server', done => {
-    run('flow', 'babel', 'server', done);
+    run('flow', 'babel','start-server', done);
 });
 
 gulp.task('transpile', () => {
@@ -54,8 +54,8 @@ gulp.task('clean', done => {
 gulp.task('clean-server', done => {
     rimraf(PATHS.server.dist, done);
 });
-gulp.task('clean-client', done => {
 
+gulp.task('clean-client', done => {
     rimraf(PATHS.client.dist, done);
 });
 
@@ -70,23 +70,37 @@ gulp.task('babel', shell.task([
 
 let express;
 
-gulp.task('server', () => {
-    express = server.new(PATHS.server.dist);
+gulp.task('start-server', (done) => {
+    if(express)
+        express.stop();
+    express = gls.new(PATHS.server.main, 3000);
+
+    //use gulp.watch to trigger server actions(notify, start or stop)
+    watch([PATHS.client.dist + PATHS.all], (file) => {
+        console.log("[gulp.start-server.watch] A STATIC CLIENT file has changed! file:", file);
+        express.notify.apply(express, [file]);
+    });
+
+    run('restart-server', done);
 });
 
-gulp.task('restart', () => {
-    if(express)
+gulp.task('restart-server', () => {
+    if(express){
         express.start.bind(express)();
-    else {
-        console.log("[gulp.restart] Express server don't exist. Continue...");
     }
 });
 
 gulp.task('watch', () => {
     watch(PATHS.server.src + PATHS.js, () => {
-        gulp.start('build');
+        console.log("[gulp.watch] SERVER files changed! building server...");
+        gulp.start('build-server');
     });
-    watch(PATHS.client.src + PATHS.js, () => {
-        gulp.start('transpile');
+    watch(PATHS.client.src + PATHS.js, (file) => {
+        console.log("[gulp.watch] CLIENT JS file changed! transpiling..., file:",file);
+        run('transpile');
+    });
+    watch(PATHS.client.src + PATHS.html, (file) => {
+        console.log("[gulp.watch] CLIENT HTML file changed! copying..., file:",file);
+        run('copy-client');
     });
 });

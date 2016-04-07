@@ -1,0 +1,120 @@
+[
+  {
+    "id":"a1",
+    "name":"Jaron Lanier",
+    "sources":[
+      {
+        "id":"s1",
+        "title":"You Are Not A Gadget",
+        "type":"book",
+        "quotes":[
+          {
+            "id":"q1",
+            "source_id":"s1",
+            "author_id":"a1",
+            "likes":1,
+            "text":"To be a person you have to find a sweet spot in which you both invent yourself and are real.",
+            "location":"3369-3372",
+            "tags":[
+              "reality",
+              "person"
+            ]
+          },
+          {
+            "id":"q2",
+            "source_id":"s1",
+            "author_id":"a1",
+            "likes":2,
+            "text":"What makes something trully real is that it is impossible to represent it to completion.",
+            "location":"2450-2451",
+            "tags":[
+              "reality"
+            ]
+          },
+          {
+            "id":"q3",
+            "source_id":"s1",
+            "author_id":"a1",
+            "likes":3,
+            "text":"'Troll' is a term for an anonymous person who is abusive in an online environment.",
+            "location":"1180-1181",
+            "tags":[
+              "internet",
+              "definition"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id":"a2",
+    "name":"Neil Gaiman",
+    "sources":[
+      {
+        "id":"s2",
+        "title":"American Gods",
+        "type":"book",
+        "quotes":[
+          {
+            "id":"q4",
+            "source_id":"s2",
+            "author_id":"a2",
+            "likes":123,
+            "text":"Life is a disease: sexually transmitted, and invariably fatal.",
+            "location":"",
+            "tags":[
+              "life"
+            ]
+          },
+          {
+            "id":"q5",
+            "source_id":"s2",
+            "author_id":"a2",
+            "likes":321,
+            "text":"Every hour wounds. The last one kills.",
+            "location":"",
+            "tags":[
+              "life", "kill"
+            ]
+          },
+          {
+            "id":"q6",
+            "source_id":"s2",
+            "author_id":"a2",
+            "likes":333,
+            "text":"Even nothing cannot last forever.",
+            "location":"",
+            "tags":[
+              "nothing","forever"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id":"",
+    "name":"",
+    "sources":[
+      {
+        "id":"",
+        "title":"",
+        "type":"",
+        "quotes":[
+          {
+            "id":"",
+            "source_id":"",
+            "author_id":"",
+            "likes":0,
+            "text":"",
+            "location":"",
+            "tags":[
+              ""
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
