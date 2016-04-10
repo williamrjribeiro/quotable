@@ -31,7 +31,7 @@ angular.module('quotable',['ui.router'])
 
     $stateProvider.state('/',{
         url: '/',
-        template: '<ul><li ng-repeat="quote in mainCtrl.topQuotes" >{{quote}}</li></ul>',
+        template: '<ul><li ng-repeat="quote in mainCtrl.topQuotes" ><a ui-sref="author({authorName: quote.authorName})">To {{quote.authorName}}</a></li></ul>',
         controller: function (){
             console.log("[mainCtrl]");
             this.topQuotes = data;
@@ -40,7 +40,7 @@ angular.module('quotable',['ui.router'])
     })
     .state('author',{
         url: '/:authorName',
-        template: '<h1>{{author.authorName}}</h1><h2>{{author.text}}</h2><a ui-sref="author.source({authorName: author.authorName, sourceTitle: author.source})">To {{author.source}}</a><div ui-view></div>',
+        template: '<h1>{{author.authorName}}</h1><h2>{{author.text}}</h2><a ui-sref="author.source({sourceTitle: author.source})">To {{author.source}}</a><div ui-view></div>',
         controller: function ($stateParams, $scope){
             console.log("[authorCtrl] authorName:", $stateParams.authorName);
             $scope.author = data.find((d,i) => {
