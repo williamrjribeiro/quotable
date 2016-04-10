@@ -19,6 +19,7 @@ const PATHS = {
         main:   './client/app.js'
     },
     js:     '/**/*.js',
+    json:   '/**/*.json',
     html:   '/**/*.html',
     all:    '/**/*.*'
 };
@@ -45,6 +46,7 @@ gulp.task('transpile', () => {
 
 gulp.task('copy-client', () => {
     gulp.src(PATHS.client.src + PATHS.html).pipe(gulp.dest(PATHS.client.dist));
+    gulp.src(PATHS.client.src + PATHS.json).pipe(gulp.dest(PATHS.client.dist));
 });
 
 gulp.task('clean', done => {
