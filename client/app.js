@@ -1,75 +1,61 @@
 import angular from 'angular';
 import 'angular-ui-router';
+//import './ApiService';
 
-let data = [
-    {
-        text: "T1",
-        authorName: "A1",
-        source: "S1",
-        picture: "url1.jpg",
-        id: "1"
-    },
-    {
-        text: "T2",
-        authorName: "A2",
-        source: "S2",
-        picture: "url2.jpg",
-        id: "2"
-    },
-    {
-        text: "T3",
-        authorName: "A3",
-        source: "S3",
-        picture: "url3.jpg",
-        id: "3"
-    }
-];
-
-angular.module('quotable',['ui.router'])
+angular.module('quotable', ['ui.router'] )
+.provider('ApiService', function ApiServiceProvider(){
+    this.$get = function($http){
+        return {
+            toppers: function(){
+                console.log("[ApiService.toppers]");
+                return $http.get('/api/toppers');
+            }
+        };
+    };
+})
 .config(function($stateProvider, $urlRouterProvider){
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('toppers');
 
-    $stateProvider.state('/',{
+    $stateProvider.state('toppers',{
         url: '/',
-        template: '<ul><li ng-repeat="quote in mainCtrl.topQuotes" ><a ui-sref="author({authorName: quote.authorName})">To {{quote.authorName}}</a></li></ul>',
-        controller: function (){
-            console.log("[mainCtrl]");
-            this.topQuotes = data;
-        },
-        controllerAs: 'mainCtrl'
+        templateUrl: './partials/toppers.html',
+        controller: function ($scope, $state, ApiService){
+            console.log("[toppers.controller]");
+
+            $scope.toAuthorState = function(authorName){
+                console.log("[toppers.toAuthorState] authorName:", authorName);
+                $state.go('author', {authorName: authorName.toLowerCase().replace(" ","_")});
+            };
+            $scope.loading = true;
+            ApiService.toppers().then((resp) => {
+                $scope.loading = false;
+                $scope.toppers = resp.data;
+            });
+        }
     })
     .state('author',{
         url: '/:authorName',
         template: '<h1>{{author.authorName}}</h1><h2>{{author.text}}</h2><a ui-sref="author.source({sourceTitle: author.source})">To {{author.source}}</a><div ui-view></div>',
-        controller: function ($stateParams, $scope){
+        controller: function ($stateParams, $scope, ApiService){
             console.log("[authorCtrl] authorName:", $stateParams.authorName);
-            $scope.author = data.find((d,i) => {
-                if(d.authorName === $stateParams.authorName)
-                    return d;
-            });
+            $scope.author = null;
         },
         controllerAs: 'authorCtrl'
     })
     .state('author.source',{
         url: '/:sourceTitle',
         template: '<h1>{{source.source}}</h1><h2>{{source.text}}</h2><h3>{{source.authorName}}</h3><a ui-sref="author.source.quote({quoteId: source.id})">To quote {{source.text}}</a><div ui-view></div>',
-        controller: function ($stateParams, $scope){
+        controller: function ($stateParams, $scope, ApiService){
             console.log("[sourceCtrl] sourceTitle:", $stateParams.sourceTitle);
-            $scope.source = data.find((d,i) => {
-                if(d.authorName === $stateParams.authorName && d.source === $stateParams.sourceTitle)
-                    return d;
-            });
+            $scope.source = null;
         },
         controllerAs: 'sourceCtrl'
     }).state('author.source.quote',{
         url: '/:quoteId',
         template: '<h1>"{{quote.text}}"',
-        controller: function ($stateParams, $scope){
+        controller: function ($stateParams, $scope, ApiService){
             console.log("[quoteCtrl] sourceTitle:", $stateParams.quoteId);
-            $scope.quote = data.find((d,i) => {
-                if(d.id === $stateParams.quoteId && d.authorName === $stateParams.authorName && d.source === $stateParams.sourceTitle)
-                    return d;
-            });
+            $scope.quote = null;
         },
         controllerAs: 'quoteCtrl'
     });

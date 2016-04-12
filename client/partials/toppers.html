@@ -1,0 +1,16 @@
+<h1>Top Authors of all time</h1>
+<h5 ng-if="loading">loading...</h5>
+<ul ng-if="!loading">
+    <li ng-repeat="author in toppers.authors">
+        <h3><a href="javascript:void(0)" ng-click="toAuthorState(author.authorName)">{{author.authorName}}</a> - {{author.likes}} likes</h3>
+    </li>
+</ul>
+<br />
+<h1>Top Quotes of all time</h1>
+<h5 ng-if="loading">loading...</h5>
+<ul ng-if="!loading">
+    <li ng-repeat="quote in toppers.quotes">
+        <h3><a ui-sref="">"{{quote.text}}"</a></h3>
+        <h4>by <a href="javascript:void(0)" ng-click="toAuthorState(quote.authorName)">{{quote.authorName}}</a> - {{quote.likes}} likes</h4>
+    </li>
+</ul>
