@@ -1,16 +1,39 @@
-<h1>Top Authors of all time</h1>
-<h5 ng-if="loading">loading...</h5>
-<ul ng-if="!loading">
-    <li ng-repeat="author in toppers.authors">
-        <h3><a href="javascript:void(0)" ng-click="toAuthorState(author.authorName)">{{author.authorName}}</a> - {{author.likes}} likes</h3>
+<h1>Top 3 Mysterious Quotes of all time</h1>
+<h5 ng-if="loadingD">loading...</h5>
+<ol ng-if="!loadingD">
+    <li ng-repeat="quote in mysteriousQuotes">
+        <h3>"{{quote.text}}"</h3>
+        <h4>by Unknown! from Unknown! - {{quote.likes}} likes</h4>
     </li>
-</ul>
+</ol>
+
 <br />
-<h1>Top Quotes of all time</h1>
-<h5 ng-if="loading">loading...</h5>
-<ul ng-if="!loading">
-    <li ng-repeat="quote in toppers.quotes">
-        <h3><a ui-sref="">"{{quote.text}}"</a></h3>
-        <h4>by <a href="javascript:void(0)" ng-click="toAuthorState(quote.authorName)">{{quote.authorName}}</a> - {{quote.likes}} likes</h4>
+
+<h1>Top 3 Unsourced Quotes of all time</h1>
+<h5 ng-if="loadingC">loading...</h5>
+<ol ng-if="!loadingC">
+    <li ng-repeat="quote in unsourcedQuotes">
+        <h3>"{{quote.text}}"</h3>
+        <h4>by <a href="javascript:void(0)" ng-click="toAuthorState(quote.author_id)">{{quote.author_id}}</a> from  - Unknown! {{quote.likes}} likes</h4>
     </li>
-</ul>
+</ol>
+
+<br />
+
+<h1>Top 3 Most Liked Sources of all time</h1>
+<h5 ng-if="loadingB">loading...</h5>
+<ol ng-if="!loadingB">
+    <li ng-repeat="source in knownSources">
+        <h3><a href="javascript:void(0)" ng-click="toSourceState(source._id)">{{source._id}}</a> - {{source.total_likes}} likes</h3>
+    </li>
+</ol>
+
+<br />
+
+<h1>Top 3 Most Liked Authors of all time</h1>
+<h5 ng-if="loadingA">loading...</h5>
+<ol ng-if="!loadingA">
+    <li ng-repeat="author in knownAuthors">
+        <h3><a href="javascript:void(0)" ng-click="toAuthorState(author._id)">{{author._id}}</a> - {{author.total_likes}} likes</h3>
+    </li>
+</ol>

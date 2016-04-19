@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "Jaron Lanier",
+    "born": "1960-05-03",
+    "death": null,
+    "type": "Artist",
+    "nationality": "North American",
+    "sources": [
+      {
+        "_id": "You Are Not A Gadget",
+        "type": "book",
+        "publish_date": 2010,
+        "original_lang": "eng"
+      }
+    ]
+  },
+  {
+    "_id": "Amanda Palmer",
+    "born": "1976-04-30",
+    "death": null,
+    "type": "Musician",
+    "nationality": "North American",
+    "sources": [
+      {
+        "_id": "The Art Of Asking",
+        "type": "book",
+        "publish_date": 2014,
+        "original_lang": "eng"
+      }
+    ]
+  },
+  {
+    "_id": "Neil Gaiman",
+    "born": "1960-11-10",
+    "death": null,
+    "type": "Writter",
+    "nationality": "British",
+    "sources": [
+      {
+        "_id": "American Gods",
+        "type": "book",
+        "publish_date": 2001,
+        "original_lang": "eng"
+      }
+    ]
+  }
+]

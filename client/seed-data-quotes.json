@@ -1,0 +1,185 @@
+[
+  {
+    "source_id": "You Are Not A Gadget",
+    "author_id": "Jaron Lanier",
+    "likes": 100,
+    "text": "To be a person you have to find a sweet spot in which you both invent yourself and are real.",
+    "locations": {
+      "kindle": "3369-3372",
+      "page": 120
+    },
+    "tags": [
+      "reality",
+      "person"
+    ]
+  },
+  {
+    "source_id": "You Are Not A Gadget",
+    "author_id": "Jaron Lanier",
+    "likes": 102,
+    "text": "What makes something trully real is that it is impossible to represent it to completion.",
+    "locations": {
+      "kindle": "2450-2451",
+      "page": 100
+    },
+    "tags": [
+      "reality"
+    ]
+  },
+  {
+    "source_id": "You Are Not A Gadget",
+    "author_id": "Jaron Lanier",
+    "likes": 103,
+    "text": "'Troll' is a term for an anonymous person who is abusive in an online environment.",
+    "locations": {
+      "kindle": "1180-1181",
+      "page": 90
+    },
+    "tags": [
+      "internet",
+      "definition"
+    ]
+  },
+  {
+    "source_id": "American Gods",
+    "author_id": "Neil Gaiman",
+    "likes": 200,
+    "text": "Life is a disease: sexually transmitted, and invariably fatal.",
+    "locations": {
+      "kindle": null,
+      "page": null
+    },
+    "tags": [
+      "life"
+    ]
+  },
+  {
+    "source_id": "American Gods",
+    "author_id": "Neil Gaiman",
+    "likes": 201,
+    "text": "Every hour wounds. The last one kills.",
+    "locations": {
+      "kindle": null,
+      "page": null
+    },
+    "tags": [
+      "life",
+      "kill"
+    ]
+  },
+  {
+    "source_id": "American Gods",
+    "author_id": "Neil Gaiman",
+    "likes": 202,
+    "text": "Even nothing cannot last forever.",
+    "locations": {
+      "kindle": null,
+      "page": null
+    },
+    "tags": [
+      "nothing",
+      "forever"
+    ]
+  },
+  {
+    "source_id": "The Art Of Asking",
+    "author_id": "Amanda Palmer",
+    "likes": 300,
+    "text": "Not everybody wants to be looked at. Everybody wants to be seen.",
+    "locations": {
+      "kindle": null,
+      "page": null
+    },
+    "tags": [
+      "seen",
+      "looked"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": "William Shakespere",
+    "likes": 112,
+    "text": "Love all, trust a few, do wrong to none.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "love",
+      "trust"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": "Neil Gaiman",
+    "likes": 12,
+    "text": "Sometimes the best way to learn something is by doing it wrong and looking at what you did.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "learn",
+      "wrong"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": "Jaron Lanier",
+    "likes": 150,
+    "text": "Criticism is always easier than constructive solutions.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "criticism",
+      "constructive",
+      "solution"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": null,
+    "likes": 23,
+    "text": "Be somebody who makes everybody fell like a somebody.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "somebody",
+      "feel"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": null,
+    "likes": 32,
+    "text": "Look for something positive in each day, even if some days you have to look a little harder.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "look",
+      "positive",
+      "motivation"
+    ]
+  },
+  {
+    "source_id": null,
+    "author_id": null,
+    "likes": 67,
+    "text": "When it rains look for rainbows. When it's dark look for stars.",
+    "locations": {
+      "kindle": null,
+      "page": -1
+    },
+    "tags": [
+      "rain",
+      "starts",
+      "motivation"
+    ]
+  }
+]

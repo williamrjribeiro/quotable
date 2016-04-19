@@ -1,14 +1,21 @@
+/* @flow */
 import angular from 'angular';
 import 'angular-ui-router';
-//import './ApiService';
 
 angular.module('quotable', ['ui.router'] )
 .provider('ApiService', function ApiServiceProvider(){
     this.$get = function($http){
         return {
-            toppers: function(){
-                console.log("[ApiService.toppers]");
-                return $http.get('/api/toppers');
+            mostLiked: function(collectionName="mysterious",limit=3){
+                console.log("[ApiService.mostLiked]");
+                /* Most Liked URL Pattern
+                   /api/mostLiked/authors
+                   /api/mostLiked/sources
+                   /api/mostLiked/unsourced
+                   /api/mostLiked/unauthored
+                   /api/mostLiked/
+                */
+                return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
             }
         };
     };
@@ -22,14 +29,39 @@ angular.module('quotable', ['ui.router'] )
         controller: function ($scope, $state, ApiService){
             console.log("[toppers.controller]");
 
-            $scope.toAuthorState = function(authorName){
-                console.log("[toppers.toAuthorState] authorName:", authorName);
-                $state.go('author', {authorName: authorName.toLowerCase().replace(" ","_")});
+            $scope.loadingA = true;
+            $scope.loadingB = true;
+            $scope.loadingC = true;
+            $scope.loadingD = true;
+
+            $scope.toAuthorState = function(authorId){
+                console.log("[toppers.toAuthorState] authorId:", authorId);
+                $state.go('author', {authorName: authorId.toLowerCase().replace(" ","_")});
             };
-            $scope.loading = true;
-            ApiService.toppers().then((resp) => {
-                $scope.loading = false;
-                $scope.toppers = resp.data;
+
+            $scope.toSourceState = function(sourceId){
+                console.log("[toppers.toSourceState] sourceId:", sourceId);
+                $state.go('author.source', {sourceTitle: sourceId.toLowerCase().replace(" ","_")});
+            };
+
+            ApiService.mostLiked("authors").then((resp) => {
+                $scope.loadingA = false;
+                $scope.knownAuthors = resp.data;
+            });
+
+            ApiService.mostLiked("sources").then((resp) => {
+                $scope.loadingB = false;
+                $scope.knownSources = resp.data;
+            });
+
+            ApiService.mostLiked("unsourced").then((resp) => {
+                $scope.loadingC = false;
+                $scope.unsourcedQuotes = resp.data;
+            });
+
+            ApiService.mostLiked().then((resp) => {
+                $scope.loadingD = false;
+                $scope.mysteriousQuotes = resp.data;
             });
         }
     })
