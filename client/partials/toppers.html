@@ -14,7 +14,7 @@
 <ol ng-if="!loadingC">
     <li ng-repeat="quote in unsourcedQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by <a href="javascript:void(0)" ng-click="toAuthorState(quote.author_id)">{{quote.author_id}}</a> from  - Unknown! {{quote.likes}} likes</h4>
+        <h4>by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_id}}</a> from  - Unknown! {{quote.likes}} likes</h4>
     </li>
 </ol>
 
@@ -24,7 +24,7 @@
 <h5 ng-if="loadingB">loading...</h5>
 <ol ng-if="!loadingB">
     <li ng-repeat="source in knownSources">
-        <h3><a href="javascript:void(0)" ng-click="toSourceState(source._id)">{{source._id}}</a> - {{source.total_likes}} likes</h3>
+        <h3><a href="javascript:void(0)" ng-click="BaseStateCtrl.toSourceState(source._id)">{{source._id}}</a> - {{source.total_likes}} likes</h3>
     </li>
 </ol>
 
@@ -34,6 +34,6 @@
 <h5 ng-if="loadingA">loading...</h5>
 <ol ng-if="!loadingA">
     <li ng-repeat="author in knownAuthors">
-        <h3><a href="javascript:void(0)" ng-click="toAuthorState(author._id)">{{author._id}}</a> - {{author.total_likes}} likes</h3>
+        <h3><a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author._id}}</a> - {{author.total_likes}} likes</h3>
     </li>
 </ol>

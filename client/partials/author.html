@@ -1,0 +1,24 @@
+<h1>{{author._id}}</h1>
+<h3>{{author.nationality}} {{author.type}}</h3>
+<div>
+    <b>Born:</b> {{author.born}}
+    <b>Death:</b> {{author.death}}
+</div>
+<h2>Sources:</h2>
+<ul>
+    <li ng-repeat="source in author.sources">
+        <div>
+            <h2><a href="javascript:void(0)" ng-click="BaseStateCtrl.toSourceState(source._id)">{{source._id}}</a></h2>
+
+            <div>The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}</div>
+            <!--<h3>Top Quotes:</h3>
+            <h5 ng-if="loadingA">loading...</h5>
+            <ol ng-if="!loadingA">
+                <li ng-repeat="quote in mysteriousQuotes">
+                    <h3>"{{quote.text}}"</h3>
+                    <h4>by Unknown! from Unknown! - {{quote.likes}} likes</h4>
+                </li>
+            </ol> -->
+        </div>
+    </li>
+</ul>

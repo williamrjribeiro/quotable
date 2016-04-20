@@ -43,5 +43,14 @@
         "original_lang": "eng"
       }
     ]
+},
+{
+    "_id": "William Shakespeare",
+    "born": "1564-04-23",
+    "death": "1616-04-23",
+    "type": "Dramatist",
+    "nationality": "English",
+    "sources": [
+    ]
   }
 ]

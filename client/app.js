@@ -6,8 +6,8 @@ angular.module('quotable', ['ui.router'] )
 .provider('ApiService', function ApiServiceProvider(){
     this.$get = function($http){
         return {
-            mostLiked: function(collectionName="mysterious",limit=3){
-                console.log("[ApiService.mostLiked]");
+            mostLiked (collectionName="mysterious",limit=3){
+                console.log("[ApiService.mostLiked] collectionName:",collectionName,', limit:', limit);
                 /* Most Liked URL Pattern
                    /api/mostLiked/authors
                    /api/mostLiked/sources
@@ -16,8 +16,40 @@ angular.module('quotable', ['ui.router'] )
                    /api/mostLiked/
                 */
                 return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
+            },
+            geAuthor(authorId) {
+                console.log("[ApiService.geAuthor] authorId:",authorId);
+                return $http.get(`/api/authors/${authorId}`);
             }
         };
+    };
+})
+.provider('BaseStateCtrl', function BaseStateCtrlProvider(){
+    this.$get = function($state){
+        return {
+            sanitizeId(id){
+                const sanitized = id.toLowerCase().replace(/ /g,"_");
+                console.log("[BaseStateCtrl.sanitizeId] id:", id,", sanitized:", sanitized);
+                return sanitized;
+            },
+            toSourceState(id){
+                const sanitized = this.sanitizeId(id);
+                console.log("[BaseStateCtrl.toSourceState] sanitized:", sanitized);
+                $state.go('author.source', {sourceTitle: sanitized});
+            },
+            toAuthorState(id){
+                const sanitized = this.sanitizeId(id);
+                console.log("[BaseStateCtrl.toSourceState] sanitized:", sanitized);
+                $state.go('author', {authorName: sanitized});
+            },
+            displayLang(lang) {
+                console.log("[BaseStateCtrl.displayLang] lang:", lang);
+                switch(lang){
+                    case "eng": return "English";
+                    default: return lang;
+                }
+            }
+        }
     };
 })
 .config(function($stateProvider, $urlRouterProvider){
@@ -26,23 +58,14 @@ angular.module('quotable', ['ui.router'] )
     $stateProvider.state('toppers',{
         url: '/',
         templateUrl: './partials/toppers.html',
-        controller: function ($scope, $state, ApiService){
+        controller: function ($scope, $state, ApiService, BaseStateCtrl){
             console.log("[toppers.controller]");
 
+            $scope.BaseStateCtrl = BaseStateCtrl;
             $scope.loadingA = true;
             $scope.loadingB = true;
             $scope.loadingC = true;
             $scope.loadingD = true;
-
-            $scope.toAuthorState = function(authorId){
-                console.log("[toppers.toAuthorState] authorId:", authorId);
-                $state.go('author', {authorName: authorId.toLowerCase().replace(" ","_")});
-            };
-
-            $scope.toSourceState = function(sourceId){
-                console.log("[toppers.toSourceState] sourceId:", sourceId);
-                $state.go('author.source', {sourceTitle: sourceId.toLowerCase().replace(" ","_")});
-            };
 
             ApiService.mostLiked("authors").then((resp) => {
                 $scope.loadingA = false;
@@ -67,16 +90,24 @@ angular.module('quotable', ['ui.router'] )
     })
     .state('author',{
         url: '/:authorName',
-        template: '<h1>{{author.authorName}}</h1><h2>{{author.text}}</h2><a ui-sref="author.source({sourceTitle: author.source})">To {{author.source}}</a><div ui-view></div>',
-        controller: function ($stateParams, $scope, ApiService){
+        templateUrl: './partials/author.html',
+        controller: function ($stateParams, $scope, ApiService, BaseStateCtrl){
             console.log("[authorCtrl] authorName:", $stateParams.authorName);
-            $scope.author = null;
+
+            $scope.BaseStateCtrl = BaseStateCtrl;
+
+            ApiService.geAuthor($stateParams.authorName).then((resp) => {
+                resp.data.sources.map((item) => {
+                    item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
+                });
+                $scope.author = resp.data;
+            });
         },
         controllerAs: 'authorCtrl'
     })
     .state('author.source',{
         url: '/:sourceTitle',
-        template: '<h1>{{source.source}}</h1><h2>{{source.text}}</h2><h3>{{source.authorName}}</h3><a ui-sref="author.source.quote({quoteId: source.id})">To quote {{source.text}}</a><div ui-view></div>',
+        template: '<h1>HELLO</h1>',
         controller: function ($stateParams, $scope, ApiService){
             console.log("[sourceCtrl] sourceTitle:", $stateParams.sourceTitle);
             $scope.source = null;

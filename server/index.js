@@ -22,6 +22,17 @@ const dbClient = function(){
     const _dbUrl = "mongodb://localhost:27017/";
     let _db;
     let _isConnected = false;
+
+    function _resolver(deferred, err, res){
+        if(err){
+            console.error("[dbClient._resolver] something went wrong! err:", err);
+            deferred.reject(err);
+        }
+        else{
+            deferred.resolve(res);
+        }
+    }
+
     return {
         connect(dbName){
             console.log("[dbClient.connect] dbName:", dbName);
@@ -39,15 +50,7 @@ const dbClient = function(){
         },
         mostLiked(target, limit) {
             console.log("[dbClient.mostLiked] target:", target,", limit:", limit);
-            function toArrayCb(err, res){
-                if(err){
-                    console.error("[dbClient.mostLiked] something went wrong! err:", err);
-                    deferred.reject(err);
-                }
-                else{
-                    deferred.resolve(res);
-                }
-            }
+
 
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
@@ -55,7 +58,7 @@ const dbClient = function(){
                     {"$group":{"_id":"$author_id","total_likes":{"$sum":"$likes"}}}
                     ,{"$sort":{"total_likes":-1}}
                     ,{"$limit":3}
-                ]).toArray(toArrayCb);
+                ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.SOURCES){
                 _db.collection('quotes').aggregate([
@@ -63,23 +66,32 @@ const dbClient = function(){
                     ,{"$group":{"_id":"$source_id","total_likes":{"$sum":"$likes"}}}
                     ,{"$sort":{"total_likes":-1}}
                     ,{"$limit": limit}
-                ]).toArray(toArrayCb);
+                ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.UNSOURCED){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": {"$ne": null}}}
                     ,{"$sort": {"likes": -1}}
                     ,{"$limit": limit}
-                ]).toArray(toArrayCb);
+                ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.MYSTERIOUS){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": null}}
                     ,{"$sort": {"likes": -1}}
                     ,{"$limit": limit}
-                ]).toArray(toArrayCb);
+                ]).toArray(_resolver.bind(this, deferred));
             }
 
+            return deferred.promise;
+        },
+        getAuthor(authorId) {
+            console.log("[dbClient.getAuthor] authorId:", authorId);
+            let deferred = Q.defer();
+            let author = null;
+            _db.collection('authors').findOne({"_id": authorId}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
             return deferred.promise;
         },
         isConnected(){
@@ -87,6 +99,14 @@ const dbClient = function(){
         }
     }
 }();
+
+const UTILS = {
+    camelCase(s) {
+        return (s||'').toLowerCase().replace(/(\b|_)\w/g, function(m) {
+            return m.toUpperCase().replace(/_/,' ');
+        });
+    }
+};
 
 dbClient.connect("quotable-dev");
 const app = express();
@@ -105,7 +125,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 */
 app.route('/api/mostLiked/:target?')
 .get((req, resp, next) => {
-    console.log("[/api/mostLiked] target:", typeof req.params.target,", limit:", req.query.limit);
+    console.log("[/api/mostLiked] target:", req.params.target,", limit:", req.query.limit);
     const target = req.params.target || C.MOST_LIKED.MYSTERIOUS;
     const limit = req.query.limit;
     dbClient.mostLiked(target, parseInt(limit, 10)).then((data) => {
@@ -113,6 +133,19 @@ app.route('/api/mostLiked/:target?')
         resp.json(data);
     }).catch((err) => {
         console.error(`[/api/mostLiked/${target}] err:`, err);
+        resp.sendStatus(500);
+    });
+});
+
+app.route('/api/authors/:authorId?')
+.get((req, resp, next) => {
+    console.log("[/api/authors] authorId:", req.params.authorId);
+    const authorId = UTILS.camelCase(req.params.authorId);
+    dbClient.getAuthor(authorId).then((data) => {
+        console.log(`[/api/authors/${authorId}] data:`, data);
+        resp.json(data);
+    }).catch((err) => {
+        console.error(`[/api/authors/${authorId}] err:`, err);
         resp.sendStatus(500);
     });
 });
