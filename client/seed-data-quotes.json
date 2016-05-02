@@ -1,9 +1,10 @@
 [
   {
-    "source_id": "You Are Not A Gadget",
-    "author_id": "Jaron Lanier",
+    "_id": "quote_00001",
+    "source_id": "you_are_not_a_gadget",
+    "author_id": "jaron_lanier",
     "likes": 100,
-    "text": "To be a person you have to find a sweet spot in which you both invent yourself and are real.",
+    "text": "To be a person you have to find a sweet spot in which you both invent yourself and are real",
     "locations": {
       "kindle": "3369-3372",
       "page": 120
@@ -14,10 +15,11 @@
     ]
   },
   {
-    "source_id": "You Are Not A Gadget",
-    "author_id": "Jaron Lanier",
+    "_id": "quote_00002",
+    "source_id": "you_are_not_a_gadget",
+    "author_id": "jaron_lanier",
     "likes": 102,
-    "text": "What makes something trully real is that it is impossible to represent it to completion.",
+    "text": "What makes something trully real is that it is impossible to represent it to completion",
     "locations": {
       "kindle": "2450-2451",
       "page": 100
@@ -27,10 +29,11 @@
     ]
   },
   {
-    "source_id": "You Are Not A Gadget",
-    "author_id": "Jaron Lanier",
+    "_id": "quote_00003",
+    "source_id": "you_are_not_a_gadget",
+    "author_id": "jaron_lanier",
     "likes": 103,
-    "text": "'Troll' is a term for an anonymous person who is abusive in an online environment.",
+    "text": "'Troll' is a term for an anonymous person who is abusive in an online environment",
     "locations": {
       "kindle": "1180-1181",
       "page": 90
@@ -41,10 +44,11 @@
     ]
   },
   {
-    "source_id": "American Gods",
-    "author_id": "Neil Gaiman",
+    "_id": "quote_00004",
+    "source_id": "american_gods",
+    "author_id": "neil_gaiman",
     "likes": 200,
-    "text": "Life is a disease: sexually transmitted, and invariably fatal.",
+    "text": "Life is a disease: sexually transmitted, and invariably fatal",
     "locations": {
       "kindle": null,
       "page": null
@@ -54,10 +58,11 @@
     ]
   },
   {
-    "source_id": "American Gods",
-    "author_id": "Neil Gaiman",
+    "_id": "quote_00005",
+    "source_id": "american_gods",
+    "author_id": "neil_gaiman",
     "likes": 201,
-    "text": "Every hour wounds. The last one kills.",
+    "text": "Every hour wounds. The last one kills",
     "locations": {
       "kindle": null,
       "page": null
@@ -68,10 +73,11 @@
     ]
   },
   {
-    "source_id": "American Gods",
-    "author_id": "Neil Gaiman",
+    "_id": "quote_00006",
+    "source_id": "american_gods",
+    "author_id": "neil_gaiman",
     "likes": 202,
-    "text": "Even nothing cannot last forever.",
+    "text": "Even nothing cannot last forever",
     "locations": {
       "kindle": null,
       "page": null
@@ -82,10 +88,11 @@
     ]
   },
   {
-    "source_id": "The Art Of Asking",
-    "author_id": "Amanda Palmer",
+    "_id": "quote_00007",
+    "source_id": "the_art_of_asking",
+    "author_id": "amanda_palmer",
     "likes": 300,
-    "text": "Not everybody wants to be looked at. Everybody wants to be seen.",
+    "text": "Not everybody wants to be looked at. Everybody wants to be seen",
     "locations": {
       "kindle": null,
       "page": null
@@ -96,10 +103,11 @@
     ]
   },
   {
+    "_id": "quote_00008",
     "source_id": null,
-    "author_id": "William Shakespeare",
+    "author_id": "william_shakespeare",
     "likes": 112,
-    "text": "Love all, trust a few, do wrong to none.",
+    "text": "Love all, trust a few, do wrong to none",
     "locations": {
       "kindle": null,
       "page": -1
@@ -110,10 +118,11 @@
     ]
   },
   {
+    "_id": "quote_00009",
     "source_id": null,
-    "author_id": "Neil Gaiman",
+    "author_id": "neil_gaiman",
     "likes": 12,
-    "text": "Sometimes the best way to learn something is by doing it wrong and looking at what you did.",
+    "text": "Sometimes the best way to learn something is by doing it wrong and looking at what you did",
     "locations": {
       "kindle": null,
       "page": -1
@@ -124,10 +133,11 @@
     ]
   },
   {
+    "_id": "quote_00010",
     "source_id": null,
-    "author_id": "Jaron Lanier",
+    "author_id": "jaron_lanier",
     "likes": 150,
-    "text": "Criticism is always easier than constructive solutions.",
+    "text": "Criticism is always easier than constructive solutions",
     "locations": {
       "kindle": null,
       "page": -1
@@ -139,10 +149,11 @@
     ]
   },
   {
+    "_id": "quote_00011",
     "source_id": null,
     "author_id": null,
     "likes": 23,
-    "text": "Be somebody who makes everybody fell like a somebody.",
+    "text": "Be somebody who makes everybody fell like a somebody",
     "locations": {
       "kindle": null,
       "page": -1
@@ -153,10 +164,11 @@
     ]
   },
   {
+    "_id": "quote_00012",
     "source_id": null,
     "author_id": null,
     "likes": 32,
-    "text": "Look for something positive in each day, even if some days you have to look a little harder.",
+    "text": "Look for something positive in each day, even if some days you have to look a little harder",
     "locations": {
       "kindle": null,
       "page": -1
@@ -168,10 +180,11 @@
     ]
   },
   {
+    "_id": "quote_00013",
     "source_id": null,
     "author_id": null,
     "likes": 67,
-    "text": "When it rains look for rainbows. When it's dark look for stars.",
+    "text": "When it rains look for rainbows. When it's dark look for stars",
     "locations": {
       "kindle": null,
       "page": -1

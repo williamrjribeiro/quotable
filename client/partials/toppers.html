@@ -3,7 +3,7 @@
 <ol ng-if="!loadingD">
     <li ng-repeat="quote in mysteriousQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by Unknown! from Unknown! - {{quote.likes}} likes</h4>
+        <h4>by Unknown Author! from Unknown Source! - {{quote.likes}} likes</h4>
     </li>
 </ol>
 
@@ -14,7 +14,7 @@
 <ol ng-if="!loadingC">
     <li ng-repeat="quote in unsourcedQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_id}}</a> from  - Unknown! {{quote.likes}} likes</h4>
+        <h4>by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_id}}</a> from  - Unknown Source! {{quote.likes}} likes</h4>
     </li>
 </ol>
 

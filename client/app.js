@@ -1,6 +1,7 @@
 /* @flow */
 import angular from 'angular';
 import 'angular-ui-router';
+import {Utils} from '../crossenv/utils';
 
 angular.module('quotable', ['ui.router'] )
 .provider('ApiService', function ApiServiceProvider(){
@@ -17,9 +18,21 @@ angular.module('quotable', ['ui.router'] )
                 */
                 return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
             },
-            geAuthor(authorId) {
-                console.log("[ApiService.geAuthor] authorId:",authorId);
+            getAuthor(authorId){
+                console.log("[ApiService.getAuthor] authorId:",authorId);
                 return $http.get(`/api/authors/${authorId}`);
+            },
+            getQuotesBySource(sourceId, limit=20){
+                console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
+                return $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`);
+            },
+            getQuotesByAuthor(authorId, limit=20){
+                console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
+                return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
+            },
+            addUser(user){
+                console.log("[ApiService.addUser] user.id:",user.id);
+                return $http.post(`/api/signup`, user);
             }
         };
     };
@@ -27,22 +40,24 @@ angular.module('quotable', ['ui.router'] )
 .provider('BaseStateCtrl', function BaseStateCtrlProvider(){
     this.$get = function($state){
         return {
-            sanitizeId(id){
+            sanitizeId(id: string): string{
                 const sanitized = id.toLowerCase().replace(/ /g,"_");
                 console.log("[BaseStateCtrl.sanitizeId] id:", id,", sanitized:", sanitized);
                 return sanitized;
             },
-            toSourceState(id){
+            toAuthorState(id: string): void{
                 const sanitized = this.sanitizeId(id);
-                console.log("[BaseStateCtrl.toSourceState] sanitized:", sanitized);
-                $state.go('author.source', {sourceTitle: sanitized});
-            },
-            toAuthorState(id){
+                console.log("[BaseStateCtrl.toAuthorState] sanitized:", sanitized);
+                $state.go('author', {authorId: sanitized});
+            },toSourceState(authorId: string, sourceId: string): void{
+                console.log("[BaseStateCtrl.toSourceState]");
+                $state.go('source', {authorId: this.sanitizeId(authorId), sourceId: this.sanitizeId(sourceId)});
+            },toQuotesState(id: string): void{
                 const sanitized = this.sanitizeId(id);
-                console.log("[BaseStateCtrl.toSourceState] sanitized:", sanitized);
-                $state.go('author', {authorName: sanitized});
+                console.log("[BaseStateCtrl.toQuotesState] sanitized:", sanitized);
+                $state.go('author.source.quotes', {sourceId: sanitized});
             },
-            displayLang(lang) {
+            displayLang(lang: string): string {
                 console.log("[BaseStateCtrl.displayLang] lang:", lang);
                 switch(lang){
                     case "eng": return "English";
@@ -53,10 +68,14 @@ angular.module('quotable', ['ui.router'] )
     };
 })
 .config(function($stateProvider, $urlRouterProvider){
+    let _selectedAuthor = null;
+    let _selectedSource = null;
+
+    $urlRouterProvider.when("/", "toppers");
     $urlRouterProvider.otherwise('toppers');
 
     $stateProvider.state('toppers',{
-        url: '/',
+        url: '/toppers',
         templateUrl: './partials/toppers.html',
         controller: function ($scope, $state, ApiService, BaseStateCtrl){
             console.log("[toppers.controller]");
@@ -88,38 +107,84 @@ angular.module('quotable', ['ui.router'] )
             });
         }
     })
+    .state("/signup", {
+        url:"/signup",
+        templateUrl: "./partials/signup.html",
+        controller: function ($stateParams, $scope, $http, $state, ApiService){
+            console.log("[SigunUpCtrl]");
+            $scope.addUser = function(user){
+                console.log("[SigunUpCtrl.addUser]");
+                ApiService.addUser(user).then((resp) => {
+                    console.log("[SigunUpCtrl.addUser.then] resp:", resp);
+                    $state.go("toppers");
+                }).catch((err) => {
+                    console.warn(err);
+                });
+            };
+        },
+        controllerAs: "SignUpCtrl"
+    })
     .state('author',{
-        url: '/:authorName',
+        url: '/:authorId',
         templateUrl: './partials/author.html',
         controller: function ($stateParams, $scope, ApiService, BaseStateCtrl){
-            console.log("[authorCtrl] authorName:", $stateParams.authorName);
-
+            console.log("[authorCtrl] authorId:", $stateParams.authorId);
+            const authorId = $stateParams.authorId;
             $scope.BaseStateCtrl = BaseStateCtrl;
+            $scope.loadingQuotes = true;
+            $scope.onSourceClick = (sourceId) => {
+                console.log("[authorCtrl.onSourceClick] sourceId:",sourceId);
+                _selectedSource = $scope.author.sources.find((s) => {return s._id === sourceId});
+                console.log("[authorCtrl.onSourceClick] _selectedSource:", _selectedSource);
+                BaseStateCtrl.toSourceState(authorId, sourceId);
+            };
 
-            ApiService.geAuthor($stateParams.authorName).then((resp) => {
+            ApiService.getAuthor(authorId).then((resp) => {
                 resp.data.sources.map((item) => {
                     item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
                 });
                 $scope.author = resp.data;
+                _selectedAuthor = resp.data;
+            });
+
+            ApiService.getQuotesByAuthor(authorId).then((resp) => {
+                $scope.unsourcedQuotes = resp.data;
+                $scope.loadingQuotes = false;
             });
         },
         controllerAs: 'authorCtrl'
     })
-    .state('author.source',{
-        url: '/:sourceTitle',
-        template: '<h1>HELLO</h1>',
-        controller: function ($stateParams, $scope, ApiService){
-            console.log("[sourceCtrl] sourceTitle:", $stateParams.sourceTitle);
-            $scope.source = null;
+    .state('source',{
+        url: '/:authorId/:sourceId',
+        templateUrl: './partials/source-quotes.html',
+        controller: function ($stateParams, $scope, ApiService, BaseStateCtrl){
+            console.log("[sourceCtrl] _selectedAuthor:", _selectedAuthor,", _selectedSource:", _selectedSource);
+            const sourceId = $stateParams.sourceId;
+            const authorId = $stateParams.authorId;
+
+            $scope.BaseStateCtrl = BaseStateCtrl;
+            $scope.loading = true;
+            $scope.quotes = null;
+            $scope.author = _selectedAuthor || null;
+            $scope.source = _selectedSource || null;
+
+            if(!$scope.author){
+                ApiService.getAuthor(Utils.camelCase(authorId)).then((resp) => {
+                    resp.data.sources.map((item) => {
+                        item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
+                    });
+                    $scope.author = resp.data;
+                    const sourceIdCC = Utils.camelCase(sourceId);
+                    $scope.source = $scope.author.sources.find((s) => {return s._id === sourceIdCC});
+                    _selectedAuthor = resp.data;
+                    _selectedSource = $scope.source;
+                });
+            }
+            ApiService.getQuotesBySource(sourceId).then((resp) => {
+                $scope.quotes = resp.data;
+                $scope.loading = false;
+            });
         },
         controllerAs: 'sourceCtrl'
-    }).state('author.source.quote',{
-        url: '/:quoteId',
-        template: '<h1>"{{quote.text}}"',
-        controller: function ($stateParams, $scope, ApiService){
-            console.log("[quoteCtrl] sourceTitle:", $stateParams.quoteId);
-            $scope.quote = null;
-        },
-        controllerAs: 'quoteCtrl'
     });
 });

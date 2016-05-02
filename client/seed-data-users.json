@@ -1,0 +1,39 @@
+[
+    {
+        "name": "William R. J. Ribeiro",
+        "_id": "bill_bsb",
+        "email": "william.ribeiro@gmail.com",
+        "hash_p": "",
+        "role": "admin",
+        "likes": [
+        ],
+        "contributions": [
+            "contrib_00001","contrib_00002","contrib_00005","contrib_00006","contrib_00007"
+        ]
+    },
+    {
+        "name": "Diana Lourenço",
+        "_id": "dilourenco_",
+        "email": "lourenco.diana@gmail.com",
+        "hash_p": "",
+        "role": "moderator",
+        "likes": [
+        ],
+        "contributions": [
+            "contrib_00003","contrib_00008","contrib_00009","contrib_00010","contrib_00011"
+        ]
+    },
+    {
+        "name": "Carina Lourenço",
+        "_id": "carina_lourenco",
+        "email": "carina.s.lourenco@gmail.com",
+        "hash_p": "",
+        "role": "user",
+        "likes": [
+        ],
+        "points": 0,
+        "contributions": [
+            "contrib_00004","contrib_00012","contrib_00013","contrib_00014","contrib_00015","contrib_00016","contrib_00017"
+        ]
+    }
+]

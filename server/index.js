@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import mongo from 'mongodb';
 import Q from 'q';
+import bcrypt from 'bcrypt-nodejs';
 
 const C = {
     MOST_LIKED: {
@@ -26,6 +27,7 @@ const dbClient = function(){
     function _resolver(deferred, err, res){
         if(err){
             console.error("[dbClient._resolver] something went wrong! err:", err);
+            err.isError = true;
             deferred.reject(err);
         }
         else{
@@ -48,10 +50,8 @@ const dbClient = function(){
                 }
             });
         },
-        mostLiked(target, limit) {
+        mostLiked(target:string, limit:number) {
             console.log("[dbClient.mostLiked] target:", target,", limit:", limit);
-
-
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
                 _db.collection('quotes').aggregate([
@@ -85,11 +85,44 @@ const dbClient = function(){
 
             return deferred.promise;
         },
-        getAuthor(authorId) {
+        getAuthor(authorId:string){
             console.log("[dbClient.getAuthor] authorId:", authorId);
             let deferred = Q.defer();
-            let author = null;
             _db.collection('authors').findOne({"_id": authorId}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
+        getQuotesBySource(sourceId:string){
+            console.log("[dbClient.getQuotesBySource] sourceId:", sourceId);
+            let deferred = Q.defer();
+            _db.collection('quotes').aggregate([
+                {"$match": {"source_id": sourceId}}
+                ,{"$sort": {"likes": -1}}
+            ]).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
+        getQuotesByAuthor(authorId:string){
+            console.log("[dbClient.getQuotesByAuthor] authorId:", authorId);
+            let deferred = Q.defer();
+            _db.collection('quotes').aggregate([
+                {"$match": {"author_id": authorId, "source_id": null}}
+                ,{"$sort": {"likes": -1}}
+            ]).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
+        getUserById(userId:string){
+            console.log("[dbClient.getUserById] userId:", userId);
+            let deferred = Q.defer();
+            _db.collection('users').findOne({"_id": userId}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
+        addUser(newUser:Object){
+            console.log("[dbClient.addUser] newUser:", newUser);
+            const deferred = Q.defer();
+            _db.collection('users').insertOne(newUser, (err, item) => {
                 _resolver(deferred, err, item);
             });
             return deferred.promise;
@@ -116,6 +149,15 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+const jsonParser = bodyParser.json();
+
+function _genericDbResult(resp, result){
+    if(result.isError)
+        resp.sendStatus(500);
+    else
+        resp.json(result);
+}
+
 /* Most Liked URL Pattern
    /api/mostLiked/authors
    /api/mostLiked/sources
@@ -128,26 +170,90 @@ app.route('/api/mostLiked/:target?')
     console.log("[/api/mostLiked] target:", req.params.target,", limit:", req.query.limit);
     const target = req.params.target || C.MOST_LIKED.MYSTERIOUS;
     const limit = req.query.limit;
-    dbClient.mostLiked(target, parseInt(limit, 10)).then((data) => {
-        console.log(`[/api/mostLiked/${target}] data.length:`, data.length);
-        resp.json(data);
-    }).catch((err) => {
-        console.error(`[/api/mostLiked/${target}] err:`, err);
-        resp.sendStatus(500);
-    });
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.mostLiked(target, parseInt(limit, 10)).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId?')
 .get((req, resp, next) => {
     console.log("[/api/authors] authorId:", req.params.authorId);
     const authorId = UTILS.camelCase(req.params.authorId);
-    dbClient.getAuthor(authorId).then((data) => {
-        console.log(`[/api/authors/${authorId}] data:`, data);
-        resp.json(data);
-    }).catch((err) => {
-        console.error(`[/api/authors/${authorId}] err:`, err);
-        resp.sendStatus(500);
-    });
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getAuthor(authorId).then(bf).catch(bf);
+});
+
+app.route('/api/authors/:authorId/quotes')
+.get((req, resp, next) => {
+    console.log(`[/api/authors/${req.params.authorId}]`);
+    const authorId = UTILS.camelCase(req.params.authorId);
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getQuotesByAuthor(authorId).then(bf).catch(bf);
+});
+
+app.route('/api/sources/:sourceId/quotes')
+.get((req, resp, next) => {
+    console.log("[/api/sources/] sourceId:", req.params.sourceId);
+    const sourceId = UTILS.camelCase(req.params.sourceId);
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getQuotesBySource(sourceId).then(bf).catch(bf);
+});
+
+app.post('/api/signup', jsonParser, (req, resp) => {
+    console.log("[/api/signup/] body:", req.body);
+
+    function _preprocessNewUser(newUser){
+        console.log("[/api/signup/_preprocessNewUser]");
+        const deferred = Q.defer();
+        let ppnuser = {
+            name: newUser.name,
+            _id: newUser.id,
+            role: newUser.role,
+            email: newUser.email,
+            hash_p: ""
+        };
+
+        bcrypt.hash(newUser.password,null,null,(err, hash) => {
+            if(err) {
+                console.warn("[/api/signup/_preprocessNewUser] err:", err);
+                deferred.reject(err);
+            }
+            else{
+                ppnuser.hash_p = hash;
+                deferred.resolve(ppnuser);
+            }
+        });
+
+        return deferred.promise;
+    }
+
+    if(!req.body) return resp.sendStatus(400);
+    let newUser = req.body || {};
+
+    if(!newUser.id || !newUser.name || !newUser.password || !newUser.email || !newUser.role )
+        resp.sendStatus(400);
+    else {
+        //const hp = UTILS.hashPassword(user.password);
+        dbClient.getUserById(newUser.id).then((result) => {
+            console.log("[/api/signup/getUserById] result:", result);
+            if(result){
+                resp.status(409).send(`Username "${newUser.id}" already exists. Please try another.`);
+            }
+            else{
+                _preprocessNewUser(newUser).then((ppnuser) => {
+                    console.log("[/api/signup/_preprocessNewUser/then] ppnuser:", ppnuser);
+                    dbClient.addUser(ppnuser).then((result) => {
+                        resp.status(201).json({uri: `/users/${ppnuser._id}`, user: ppnuser});
+                    });
+                }).catch((err) => {
+                    console.error("[/api/signup/getUserById] err:", err);
+                    resp.sendStatus(500);
+                });
+            }
+        }).catch((error) => {
+            console.error("[/api/signup/] error", error);
+            resp.sendStatus(500);
+        });
+    }
 });
 
 app.listen(3000, () => console.log("Express Server listening on port 3000"));

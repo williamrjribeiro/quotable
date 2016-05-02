@@ -1,0 +1,30 @@
+<form class="form" name="Signup" ng-submit="addUser(user)">
+    <h3>Signup now and join the sources hunt!</h3>
+    <h4>Together will get rid of all unsourced mysterious quotes of the Web.</h4>
+    <br />
+    <div class="form-field">
+        <label for="username">Username:</label><input name=username type=text required ng-model="user.id">
+    </div>
+    <br />
+    <div class="form-field">
+        <label for="name">Full Name:</label><input name=name type=text required ng-model="user.name">
+    </div>
+    <br />
+    <div class="form-field">
+        <label for="password">Password:</label><input name=password type=password required ng-model="user.password">
+    </div>
+    <br />
+    <div class="form-field">
+        <label for="email">Email:</label><input name=email type=email ng-model="user.email">
+    </div>
+    <br />
+    <div class="form-field">
+    <select id="role" required ng-model="user.role">
+        <option value="user" ng-selected selected>User</option>
+        <option value="moderator">Moderator</option>
+        <option value="admin">Admin</option>
+    </select>
+    </div>
+    <br />
+    <button type="submit" name="submit">Let's do this!</button>
+</form>
