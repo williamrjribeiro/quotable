@@ -1,6 +1,6 @@
-<h1>{{source._id}}</h1>
+<h1>{{source.title}}</h1>
 <h3>
-    by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author._id}}</a>
+    by <a href="javascript:void(0)" ng-click="BaseState.toAuthorState(author._id)">{{author.name}}</a>
 </h3>
 <div>
     The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}

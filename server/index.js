@@ -63,7 +63,8 @@ const dbClient = function(){
             else if(target === C.MOST_LIKED.SOURCES){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": {"$ne": null}}}
-                    ,{"$group":{"_id":"$source_id","total_likes":{"$sum":"$likes"}}}
+                    ,{"$project" : { "author_id" : 1 , "source_id" : 1, "likes": 1 } }
+                    ,{"$group":{"_id":"$source_id","author_id":{"$addToSet":"$author_id"},"total_likes":{"$sum":"$likes"}}}
                     ,{"$sort":{"total_likes":-1}}
                     ,{"$limit": limit}
                 ]).toArray(_resolver.bind(this, deferred));
@@ -177,25 +178,22 @@ app.route('/api/mostLiked/:target?')
 app.route('/api/authors/:authorId?')
 .get((req, resp, next) => {
     console.log("[/api/authors] authorId:", req.params.authorId);
-    const authorId = UTILS.camelCase(req.params.authorId);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getAuthor(authorId).then(bf).catch(bf);
+    dbClient.getAuthor(req.params.authorId).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId/quotes')
 .get((req, resp, next) => {
     console.log(`[/api/authors/${req.params.authorId}]`);
-    const authorId = UTILS.camelCase(req.params.authorId);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getQuotesByAuthor(authorId).then(bf).catch(bf);
+    dbClient.getQuotesByAuthor(req.params.authorId).then(bf).catch(bf);
 });
 
 app.route('/api/sources/:sourceId/quotes')
 .get((req, resp, next) => {
     console.log("[/api/sources/] sourceId:", req.params.sourceId);
-    const sourceId = UTILS.camelCase(req.params.sourceId);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getQuotesBySource(sourceId).then(bf).catch(bf);
+    dbClient.getQuotesBySource(req.params.sourceId).then(bf).catch(bf);
 });
 
 app.post('/api/signup', jsonParser, (req, resp) => {

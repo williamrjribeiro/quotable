@@ -37,22 +37,15 @@ angular.module('quotable', ['ui.router'] )
 }])
 .factory('BaseState', ['$state', function BaseStateFactory($state){
     return {
-        sanitizeId(id: string): string{
-            const sanitized = id.toLowerCase().replace(/ /g,"_");
-            console.log("[BaseState.sanitizeId] id:", id,", sanitized:", sanitized);
-            return sanitized;
-        },
         toAuthorState(id: string): void{
-            const sanitized = this.sanitizeId(id);
-            console.log("[BaseState.toAuthorState] sanitized:", sanitized);
-            $state.go('author', {authorId: sanitized});
+            console.log("[BaseState.toAuthorState] id:", id);
+            $state.go('author', {authorId: id});
         },toSourceState(authorId: string, sourceId: string): void{
-            console.log("[BaseState.toSourceState]");
-            $state.go('source', {authorId: this.sanitizeId(authorId), sourceId: this.sanitizeId(sourceId)});
+            console.log("[BaseState.toSourceState] authorId:",authorId, ",sourceId", sourceId);
+            $state.go('source', {authorId: authorId, sourceId: sourceId});
         },toQuotesState(id: string): void{
-            const sanitized = this.sanitizeId(id);
-            console.log("[BaseState.toQuotesState] sanitized:", sanitized);
-            $state.go('author.source.quotes', {sourceId: sanitized});
+            console.log("[BaseState.toQuotesState] id:", id);
+            $state.go('author.source.quotes', {sourceId: id});
         },
         displayLang(lang: string): string {
             console.log("[BaseState.displayLang] lang:", lang);
@@ -83,16 +76,25 @@ angular.module('quotable', ['ui.router'] )
             $scope.loadingD = true;
 
             ApiService.mostLiked("authors").then((resp) => {
+                resp.data.map((item) => {
+                    item.name = Utils.camelCase(item._id);
+                });
                 $scope.loadingA = false;
                 $scope.knownAuthors = resp.data;
             });
 
             ApiService.mostLiked("sources").then((resp) => {
+                resp.data.map((item) => {
+                    item.title = Utils.camelCase(item._id);
+                });
                 $scope.loadingB = false;
                 $scope.knownSources = resp.data;
             });
 
             ApiService.mostLiked("unsourced").then((resp) => {
+                resp.data.map((item) => {
+                    item.author_name = Utils.camelCase(item.author_id);
+                });
                 $scope.loadingC = false;
                 $scope.unsourcedQuotes = resp.data;
             });
@@ -136,6 +138,7 @@ angular.module('quotable', ['ui.router'] )
             };
 
             ApiService.getAuthor(authorId).then((resp) => {
+                console.log("[authorCtrl.getAuthor] resp:",resp);
                 resp.data.sources.map((item) => {
                     item.disp_lang = BaseState.displayLang(item.original_lang);
                 });
@@ -164,14 +167,13 @@ angular.module('quotable', ['ui.router'] )
             $scope.author = _selectedAuthor || null;
             $scope.source = _selectedSource || null;
 
-            if(!$scope.author){
-                ApiService.getAuthor(Utils.camelCase(authorId)).then((resp) => {
+            if(!$scope.author || $scope.author.id !== authorId){
+                ApiService.getAuthor(authorId).then((resp) => {
                     resp.data.sources.map((item) => {
                         item.disp_lang = BaseState.displayLang(item.original_lang);
                     });
                     $scope.author = resp.data;
-                    const sourceIdCC = Utils.camelCase(sourceId);
-                    $scope.source = $scope.author.sources.find((s) => {return s._id === sourceIdCC});
+                    $scope.source = $scope.author.sources.find((s) => {return s._id === sourceId});
                     _selectedAuthor = resp.data;
                     _selectedSource = $scope.source;
                 });
@@ -187,6 +189,6 @@ angular.module('quotable', ['ui.router'] )
 
 angular.module('quotable').config(['$compileProvider', '$httpProvider', function ($compileProvider, $httpProvider) {
     // uncomment for production
-    //$compileProvider.debugInfoEnabled(false);
-    //$httpProvider.useApplyAsync( true );
+    $compileProvider.debugInfoEnabled(false);
+    $httpProvider.useApplyAsync( true );
 }]);

@@ -1,4 +1,4 @@
-<h1>{{author._id}}</h1>
+<h1>{{author.name}}</h1>
 <h3>{{author.nationality}} {{author.type}}</h3>
 <div>
     <b>Born:</b> {{author.born}}
@@ -8,7 +8,7 @@
 <ul>
     <li ng-repeat="source in author.sources">
         <div>
-            <h2><a href="javascript:void(0)" ng-click="onSourceClick(source._id)">{{source._id}}</a></h2>
+            <h2><a href="javascript:void(0)" ng-click="onSourceClick(source._id)">{{source.title}}</a></h2>
             <div>
                 The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}
             </div>
