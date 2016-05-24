@@ -4,69 +4,65 @@ import 'angular-ui-router';
 import {Utils} from '../crossenv/utils';
 
 angular.module('quotable', ['ui.router'] )
-.provider('ApiService', function ApiServiceProvider(){
-    this.$get = function($http){
-        return {
-            mostLiked (collectionName="mysterious",limit=3){
-                console.log("[ApiService.mostLiked] collectionName:",collectionName,', limit:', limit);
-                /* Most Liked URL Pattern
-                   /api/mostLiked/authors
-                   /api/mostLiked/sources
-                   /api/mostLiked/unsourced
-                   /api/mostLiked/unauthored
-                   /api/mostLiked/
-                */
-                return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
-            },
-            getAuthor(authorId){
-                console.log("[ApiService.getAuthor] authorId:",authorId);
-                return $http.get(`/api/authors/${authorId}`);
-            },
-            getQuotesBySource(sourceId, limit=20){
-                console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
-                return $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`);
-            },
-            getQuotesByAuthor(authorId, limit=20){
-                console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
-                return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
-            },
-            addUser(user){
-                console.log("[ApiService.addUser] user.id:",user.id);
-                return $http.post(`/api/signup`, user);
-            }
-        };
+.factory('ApiService', ['$http', function ApiServiceFactory($http){
+    return {
+        mostLiked (collectionName="mysterious",limit=3){
+            console.log("[ApiService.mostLiked] collectionName:",collectionName,', limit:', limit);
+            /* Most Liked URL Pattern
+               /api/mostLiked/authors
+               /api/mostLiked/sources
+               /api/mostLiked/unsourced
+               /api/mostLiked/unauthored
+               /api/mostLiked/
+            */
+            return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
+        },
+        getAuthor(authorId){
+            console.log("[ApiService.getAuthor] authorId:",authorId);
+            return $http.get(`/api/authors/${authorId}`);
+        },
+        getQuotesBySource(sourceId, limit=20){
+            console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
+            return $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`);
+        },
+        getQuotesByAuthor(authorId, limit=20){
+            console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
+            return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
+        },
+        addUser(user){
+            console.log("[ApiService.addUser] user.id:",user.id);
+            return $http.post(`/api/signup`, user);
+        }
     };
-})
-.provider('BaseStateCtrl', function BaseStateCtrlProvider(){
-    this.$get = function($state){
-        return {
-            sanitizeId(id: string): string{
-                const sanitized = id.toLowerCase().replace(/ /g,"_");
-                console.log("[BaseStateCtrl.sanitizeId] id:", id,", sanitized:", sanitized);
-                return sanitized;
-            },
-            toAuthorState(id: string): void{
-                const sanitized = this.sanitizeId(id);
-                console.log("[BaseStateCtrl.toAuthorState] sanitized:", sanitized);
-                $state.go('author', {authorId: sanitized});
-            },toSourceState(authorId: string, sourceId: string): void{
-                console.log("[BaseStateCtrl.toSourceState]");
-                $state.go('source', {authorId: this.sanitizeId(authorId), sourceId: this.sanitizeId(sourceId)});
-            },toQuotesState(id: string): void{
-                const sanitized = this.sanitizeId(id);
-                console.log("[BaseStateCtrl.toQuotesState] sanitized:", sanitized);
-                $state.go('author.source.quotes', {sourceId: sanitized});
-            },
-            displayLang(lang: string): string {
-                console.log("[BaseStateCtrl.displayLang] lang:", lang);
-                switch(lang){
-                    case "eng": return "English";
-                    default: return lang;
-                }
+}])
+.factory('BaseState', ['$state', function BaseStateFactory($state){
+    return {
+        sanitizeId(id: string): string{
+            const sanitized = id.toLowerCase().replace(/ /g,"_");
+            console.log("[BaseState.sanitizeId] id:", id,", sanitized:", sanitized);
+            return sanitized;
+        },
+        toAuthorState(id: string): void{
+            const sanitized = this.sanitizeId(id);
+            console.log("[BaseState.toAuthorState] sanitized:", sanitized);
+            $state.go('author', {authorId: sanitized});
+        },toSourceState(authorId: string, sourceId: string): void{
+            console.log("[BaseState.toSourceState]");
+            $state.go('source', {authorId: this.sanitizeId(authorId), sourceId: this.sanitizeId(sourceId)});
+        },toQuotesState(id: string): void{
+            const sanitized = this.sanitizeId(id);
+            console.log("[BaseState.toQuotesState] sanitized:", sanitized);
+            $state.go('author.source.quotes', {sourceId: sanitized});
+        },
+        displayLang(lang: string): string {
+            console.log("[BaseState.displayLang] lang:", lang);
+            switch(lang){
+                case "eng": return "English";
+                default: return lang;
             }
         }
     };
-})
+}])
 .config(function($stateProvider, $urlRouterProvider){
     let _selectedAuthor = null;
     let _selectedSource = null;
@@ -77,10 +73,10 @@ angular.module('quotable', ['ui.router'] )
     $stateProvider.state('toppers',{
         url: '/toppers',
         templateUrl: './partials/toppers.html',
-        controller: function ($scope, $state, ApiService, BaseStateCtrl){
+        controller: function ($scope, $state, ApiService, BaseState){
             console.log("[toppers.controller]");
 
-            $scope.BaseStateCtrl = BaseStateCtrl;
+            $scope.BaseState = BaseState;
             $scope.loadingA = true;
             $scope.loadingB = true;
             $scope.loadingC = true;
@@ -127,21 +123,21 @@ angular.module('quotable', ['ui.router'] )
     .state('author',{
         url: '/:authorId',
         templateUrl: './partials/author.html',
-        controller: function ($stateParams, $scope, ApiService, BaseStateCtrl){
+        controller: function ($stateParams, $scope, ApiService, BaseState){
             console.log("[authorCtrl] authorId:", $stateParams.authorId);
             const authorId = $stateParams.authorId;
-            $scope.BaseStateCtrl = BaseStateCtrl;
+            $scope.BaseState = BaseState;
             $scope.loadingQuotes = true;
             $scope.onSourceClick = (sourceId) => {
                 console.log("[authorCtrl.onSourceClick] sourceId:",sourceId);
                 _selectedSource = $scope.author.sources.find((s) => {return s._id === sourceId});
                 console.log("[authorCtrl.onSourceClick] _selectedSource:", _selectedSource);
-                BaseStateCtrl.toSourceState(authorId, sourceId);
+                BaseState.toSourceState(authorId, sourceId);
             };
 
             ApiService.getAuthor(authorId).then((resp) => {
                 resp.data.sources.map((item) => {
-                    item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
+                    item.disp_lang = BaseState.displayLang(item.original_lang);
                 });
                 $scope.author = resp.data;
                 _selectedAuthor = resp.data;
@@ -157,12 +153,12 @@ angular.module('quotable', ['ui.router'] )
     .state('source',{
         url: '/:authorId/:sourceId',
         templateUrl: './partials/source-quotes.html',
-        controller: function ($stateParams, $scope, ApiService, BaseStateCtrl){
+        controller: function ($stateParams, $scope, ApiService, BaseState){
             console.log("[sourceCtrl] _selectedAuthor:", _selectedAuthor,", _selectedSource:", _selectedSource);
             const sourceId = $stateParams.sourceId;
             const authorId = $stateParams.authorId;
 
-            $scope.BaseStateCtrl = BaseStateCtrl;
+            $scope.BaseState = BaseState;
             $scope.loading = true;
             $scope.quotes = null;
             $scope.author = _selectedAuthor || null;
@@ -171,7 +167,7 @@ angular.module('quotable', ['ui.router'] )
             if(!$scope.author){
                 ApiService.getAuthor(Utils.camelCase(authorId)).then((resp) => {
                     resp.data.sources.map((item) => {
-                        item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
+                        item.disp_lang = BaseState.displayLang(item.original_lang);
                     });
                     $scope.author = resp.data;
                     const sourceIdCC = Utils.camelCase(sourceId);
@@ -188,3 +184,9 @@ angular.module('quotable', ['ui.router'] )
         controllerAs: 'sourceCtrl'
     });
 });
+
+angular.module('quotable').config(['$compileProvider', '$httpProvider', function ($compileProvider, $httpProvider) {
+    // uncomment for production
+    //$compileProvider.debugInfoEnabled(false);
+    //$httpProvider.useApplyAsync( true );
+}]);

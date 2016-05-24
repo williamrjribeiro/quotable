@@ -1,3 +1,4 @@
+/* @flow */
 import gulp from 'gulp';
 import shell from 'gulp-shell';
 import watch from 'gulp-watch';
@@ -17,6 +18,9 @@ const PATHS = {
         dist:   './public',
         src:    './client',
         main:   './client/app.js'
+    },
+    crossenv: {
+        src:    './crossenv'
     },
     js:     '/**/*.js',
     json:   '/**/*.json',
@@ -79,7 +83,7 @@ gulp.task('start-server', (done) => {
 
     //use gulp.watch to trigger server actions(notify, start or stop)
     watch([PATHS.client.dist + PATHS.all], (file) => {
-        console.log("[gulp.start-server.watch] A STATIC CLIENT file has changed! file:", file);
+        console.log("[gulp.start-server.watch] A STATIC CLIENT file has changed! file:", file.relative);
         express.notify.apply(express, [file]);
     });
 
@@ -98,11 +102,15 @@ gulp.task('watch', () => {
         gulp.start('build-server');
     });
     watch(PATHS.client.src + PATHS.js, (file) => {
-        console.log("[gulp.watch] CLIENT JS file changed! transpiling..., file:",file);
+        console.log("[gulp.watch] CLIENT JS file changed! transpiling..., file:",file.relative);
         run('transpile');
     });
     watch(PATHS.client.src + PATHS.html, (file) => {
-        console.log("[gulp.watch] CLIENT HTML file changed! copying..., file:",file);
+        console.log("[gulp.watch] CLIENT HTML file changed! copying..., file:",file.relative);
         run('copy-client');
+    });
+    watch(PATHS.crossenv.src + PATHS.js, (file) => {
+        console.log("[gulp.watch] CROSSENV JS file changed! transpiling..., file:",file.relative);
+        run('transpile');
     });
 });

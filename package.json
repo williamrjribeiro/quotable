@@ -30,6 +30,7 @@
     "q": "^1.4.1"
   },
   "devDependencies": {
+    "angular-mocks": "^1.5.5",
     "babel-cli": "^6.6.5",
     "babel-core": "^6.7.4",
     "babel-plugin-transform-flow-strip-types": "^6.7.0",
@@ -42,6 +43,7 @@
     "gulp-shell": "^0.5.2",
     "gulp-uglify": "^1.5.3",
     "gulp-watch": "^4.3.5",
+    "jasmine-es6": "^0.1.10",
     "rimraf": "^2.5.2",
     "run-sequence": "^1.1.5",
     "vinyl-source-stream": "^1.1.0"
