@@ -2,11 +2,10 @@
 import angular from 'angular';
 import 'angular-ui-router';
 import {Utils} from '../crossenv/utils';
-
 angular.module('quotable', ['ui.router'] )
 .factory('ApiService', ['$http', function ApiServiceFactory($http){
     return {
-        mostLiked (collectionName="mysterious",limit=3){
+        mostLiked (collectionName="mysterious",limit=3) : Object {
             console.log("[ApiService.mostLiked] collectionName:",collectionName,', limit:', limit);
             /* Most Liked URL Pattern
                /api/mostLiked/authors
@@ -17,30 +16,39 @@ angular.module('quotable', ['ui.router'] )
             */
             return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
         },
-        getAuthor(authorId){
+        getUser(userId : string) : Object {
+            console.log("[ApiService.getUser] userId:",userId);
+            return $http.get(`/api/users/${userId}`);
+        },
+        getAuthor(authorId : string) : Object {
             console.log("[ApiService.getAuthor] authorId:",authorId);
             return $http.get(`/api/authors/${authorId}`);
         },
-        getQuotesBySource(sourceId, limit=20){
+        getQuotesBySource(sourceId : string, limit=20) : Object {
             console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
             return $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`);
         },
-        getQuotesByAuthor(authorId, limit=20){
+        getQuotesByAuthor(authorId : string, limit=20) : Object {
             console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
             return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
         },
-        addUser(user){
+        addUser(user) : Object {
             console.log("[ApiService.addUser] user.id:",user.id);
             return $http.post(`/api/signup`, user);
         },
-        verifyCredentials(credentials){
+        verifyCredentials(credentials) : Object {
             console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
             return $http.post(`/api/verifyCredentials`, credentials);
         }
     };
 }])
-.factory('BaseState', ['$state', function BaseStateFactory($state){
+.factory('BaseState', ['$state','$rootScope', function BaseStateFactory($state, $rootScope){
     return {
+        signOut() : void {
+            console.log("[BaseState.signOut] userCredentials:", $rootScope.userCredentials);
+            $rootScope.userCredentials = null;
+            $state.go("toppers");
+        },
         toAuthorState(id: string): void{
             console.log("[BaseState.toAuthorState] id:", id);
             $state.go('author', {authorId: id});
@@ -129,19 +137,29 @@ angular.module('quotable', ['ui.router'] )
     .state("/signin", {
         url:"/signin",
         templateUrl: "./partials/signin.html",
-        controller: function ($scope, $state, ApiService){
+        controller: function ($rootScope, $scope, $state, ApiService){
             console.log("[SignInCtrl]");
             $scope.verifyCredentials = function(credentials){
                 console.log("[SignInCtrl.verifyCredentials]");
                 ApiService.verifyCredentials(credentials).then((resp) => {
-                    console.log("[SignInCtrl.verifyCredentials.then] resp:", resp);
-                    $state.go("toppers");
+                    console.log("[SignInCtrl.verifyCredentials.then] data:", resp.data);
+                    $rootScope.userCredentials = resp.data.user;
+                    $state.go("profile", {userId: $rootScope.userCredentials._id});
                 }).catch((err) => {
                     console.warn(err);
                 });
             };
         },
         controllerAs: "SignInCtrl"
+    })
+    .state("profile", {
+        url:"/users/:userId",
+        templateUrl: "./partials/profile.html",
+        controller: function ($rootScope, $stateParams, $scope, $state, ApiService){
+            console.log("[ProfileCtrl] userId:", $stateParams.userId);
+            $scope.user = $rootScope.userCredentials;
+        },
+        controllerAs: "ProfileCtrl"
     })
     .state('author',{
         url: '/:authorId',

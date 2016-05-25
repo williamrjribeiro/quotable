@@ -36,7 +36,7 @@ const dbClient = function(){
     }
 
     return {
-        connect(dbName){
+        connect(dbName : string ) : void {
             console.log("[dbClient.connect] dbName:", dbName);
             _client.connect(_dbUrl + dbName, (err, db) => {
                 if(err){
@@ -50,7 +50,7 @@ const dbClient = function(){
                 }
             });
         },
-        mostLiked(target:string, limit:number) {
+        mostLiked(target:string, limit:number) : Object {
             console.log("[dbClient.mostLiked] target:", target,", limit:", limit);
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
@@ -86,7 +86,15 @@ const dbClient = function(){
 
             return deferred.promise;
         },
-        getAuthor(authorId:string){
+        getUser(userId:string) : Object {
+            console.log("[dbClient.getUser] userId:", userId);
+            let deferred = Q.defer();
+            _db.collection('users').findOne({"_id": userId}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
+        getAuthor(authorId:string) : Object {
             console.log("[dbClient.getAuthor] authorId:", authorId);
             let deferred = Q.defer();
             _db.collection('authors').findOne({"_id": authorId}, (err, item) => {
@@ -94,7 +102,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getQuotesBySource(sourceId:string){
+        getQuotesBySource(sourceId:string) : Object {
             console.log("[dbClient.getQuotesBySource] sourceId:", sourceId);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
@@ -103,7 +111,7 @@ const dbClient = function(){
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
-        getQuotesByAuthor(authorId:string){
+        getQuotesByAuthor(authorId:string) : Object {
             console.log("[dbClient.getQuotesByAuthor] authorId:", authorId);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
@@ -112,7 +120,7 @@ const dbClient = function(){
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
-        getUserById(userId:string){
+        getUserById(userId:string) : Object {
             console.log("[dbClient.getUserById] userId:", userId);
             let deferred = Q.defer();
             _db.collection('users').findOne({"_id": userId}, (err, item) => {
@@ -120,7 +128,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        addUser(newUser:Object){
+        addUser(newUser:Object) : Object {
             console.log("[dbClient.addUser] newUser:", newUser);
             const deferred = Q.defer();
             _db.collection('users').insertOne(newUser, (err, item) => {
@@ -128,7 +136,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        verifyCredentials(credentials){
+        verifyCredentials(credentials : Object ) : Object {
             console.log("[dbClient.verifyCredentials] credentials.id:",credentials.id);
             const deferred = Q.defer();
             _db.collection('users').findOne({"_id": credentials.id, "hash_p": credentials.hash_p}, (err, item) => {
@@ -136,14 +144,14 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        isConnected(){
+        isConnected() : boolean {
             return _isConnected;
         }
     }
 }();
 
 const UTILS = {
-    camelCase(s) {
+    camelCase(s : string) : string {
         return (s||'').toLowerCase().replace(/(\b|_)\w/g, function(m) {
             return m.toUpperCase().replace(/_/,' ');
         });
@@ -183,6 +191,13 @@ app.route('/api/mostLiked/:target?')
     dbClient.mostLiked(target, parseInt(limit, 10)).then(bf).catch(bf);
 });
 
+app.route('/api/users/:userId?')
+.get((req, resp, next) => {
+    console.log("[/api/users] userId:", req.params.userId);
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getUser(req.params.userId).then(bf).catch(bf);
+});
+
 app.route('/api/authors/:authorId?')
 .get((req, resp, next) => {
     console.log("[/api/authors] authorId:", req.params.authorId);
@@ -207,21 +222,6 @@ app.route('/api/sources/:sourceId/quotes')
 app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
     console.log("[/api/verifyCredentials/] body:", req.body);
 
-    function _hashPassword(password){
-        console.log("[/api/verifyCredentials/_hashPassword]");
-        const deferred = Q.defer();
-
-        bcrypt.hash(password,null,null,(err, hash) => {
-            if(err) {
-                console.warn("[/api/verifyCredentials/_hashPassword] err:", err);
-                deferred.reject(err);
-            }
-            else
-                deferred.resolve(hash);
-        });
-        return deferred.promise;
-    }
-
     if(!req.body) return resp.sendStatus(400);
     let credentials = req.body || {};
 
@@ -233,8 +233,10 @@ app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
                 bcrypt.compare(credentials.password, result.hash_p, function(err, matches) {
                     if (err)
                         resp.sendStatus(500);
-                    else if (matches)
-                        resp.status(200).json({uri: `/users/${credentials.id}`, signedin: true});
+                    else if (matches){
+                        // TODO: Should send back the hash?!
+                        resp.status(200).json({uri: `/users/${credentials.id}`, signedin: true, user: result});
+                    }
                     else
                         resp.status(401).send(`Wrong credentials. Please try again.`);
                 });

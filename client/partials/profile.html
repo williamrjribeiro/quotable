@@ -1,0 +1,22 @@
+<h1>{{user._id}}</h1>
+<h3>A.K.A. {{user.name}}</h3>
+<div>
+    <b>Email:</b> {{user.email}}
+    <b>Role:</b> {{user.role}}
+</div>
+<h2>Likes:</h2>
+<ul>
+    <li ng-repeat="like in user.likes">
+        <!-- TODO Likes List -->
+    </li>
+</ul>
+
+<h2>Contributions:</h2>
+<h5 ng-if="loadingContribs">loading...</h5>
+<ul ng-if="!loadingContribs">
+    <li ng-repeat="contrib in contributions">
+        <div>
+            {{contrib.kind}} entry for {{contrib.col}} {{contrib.ref_id}} on {{contrib.submitted}}. It was approved by {{contrib.approved.by}} on {{contrib.approved.date}}.
+        </div>
+    </li>
+</ul>
