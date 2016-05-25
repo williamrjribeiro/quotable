@@ -32,6 +32,10 @@ angular.module('quotable', ['ui.router'] )
         addUser(user){
             console.log("[ApiService.addUser] user.id:",user.id);
             return $http.post(`/api/signup`, user);
+        },
+        verifyCredentials(credentials){
+            console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
+            return $http.post(`/api/verifyCredentials`, credentials);
         }
     };
 }])
@@ -108,7 +112,7 @@ angular.module('quotable', ['ui.router'] )
     .state("/signup", {
         url:"/signup",
         templateUrl: "./partials/signup.html",
-        controller: function ($stateParams, $scope, $http, $state, ApiService){
+        controller: function ($scope, $state, ApiService){
             console.log("[SigunUpCtrl]");
             $scope.addUser = function(user){
                 console.log("[SigunUpCtrl.addUser]");
@@ -121,6 +125,23 @@ angular.module('quotable', ['ui.router'] )
             };
         },
         controllerAs: "SignUpCtrl"
+    })
+    .state("/signin", {
+        url:"/signin",
+        templateUrl: "./partials/signin.html",
+        controller: function ($scope, $state, ApiService){
+            console.log("[SignInCtrl]");
+            $scope.verifyCredentials = function(credentials){
+                console.log("[SignInCtrl.verifyCredentials]");
+                ApiService.verifyCredentials(credentials).then((resp) => {
+                    console.log("[SignInCtrl.verifyCredentials.then] resp:", resp);
+                    $state.go("toppers");
+                }).catch((err) => {
+                    console.warn(err);
+                });
+            };
+        },
+        controllerAs: "SignInCtrl"
     })
     .state('author',{
         url: '/:authorId',

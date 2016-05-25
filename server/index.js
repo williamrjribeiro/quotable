@@ -128,6 +128,14 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
+        verifyCredentials(credentials){
+            console.log("[dbClient.verifyCredentials] credentials.id:",credentials.id);
+            const deferred = Q.defer();
+            _db.collection('users').findOne({"_id": credentials.id, "hash_p": credentials.hash_p}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
         isConnected(){
             return _isConnected;
         }
@@ -194,6 +202,50 @@ app.route('/api/sources/:sourceId/quotes')
     console.log("[/api/sources/] sourceId:", req.params.sourceId);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getQuotesBySource(req.params.sourceId).then(bf).catch(bf);
+});
+
+app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
+    console.log("[/api/verifyCredentials/] body:", req.body);
+
+    function _hashPassword(password){
+        console.log("[/api/verifyCredentials/_hashPassword]");
+        const deferred = Q.defer();
+
+        bcrypt.hash(password,null,null,(err, hash) => {
+            if(err) {
+                console.warn("[/api/verifyCredentials/_hashPassword] err:", err);
+                deferred.reject(err);
+            }
+            else
+                deferred.resolve(hash);
+        });
+        return deferred.promise;
+    }
+
+    if(!req.body) return resp.sendStatus(400);
+    let credentials = req.body || {};
+
+    if(!credentials.id || !credentials.password)
+        resp.sendStatus(400);
+    else {
+        dbClient.getUserById(credentials.id).then((result) => {
+            if(result){
+                bcrypt.compare(credentials.password, result.hash_p, function(err, matches) {
+                    if (err)
+                        resp.sendStatus(500);
+                    else if (matches)
+                        resp.status(200).json({uri: `/users/${credentials.id}`, signedin: true});
+                    else
+                        resp.status(401).send(`Wrong credentials. Please try again.`);
+                });
+            }
+            else
+                resp.status(401).send(`Wrong credentials. Please try again.`);
+        }).catch((error) => {
+            console.error("[/api/signup/] error", error);
+            resp.sendStatus(500);
+        });
+    }
 });
 
 app.post('/api/signup', jsonParser, (req, resp) => {

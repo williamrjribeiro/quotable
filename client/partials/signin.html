@@ -1,0 +1,10 @@
+<form class="form" name="Signin" ng-submit="verifyCredentials(credentials)">
+    <div class="form-field">
+        <label for="username">Username:</label><input name=username type=text required ng-model="credentials.id">
+    </div>
+    <div class="form-field">
+        <label for="password">Password:</label><input name=password type=password required ng-model="credentials.password">
+    </div>
+    <br />
+    <button type="submit" name="submit">Let me in!</button>
+</form>
