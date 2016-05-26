@@ -224,7 +224,20 @@ angular.module('quotable', ['ui.router'] )
         },
         controllerAs: 'sourceCtrl'
     });
-});
+})
+.controller('AccessViewController', ['$rootScope', '$scope', '$state',function ($rootScope, $scope, $state){
+    console.log("[AccessViewController]");
+    $scope.signOut = function() {
+        console.log("[AccessViewController.signOut]");
+        $rootScope.userCredentials = null;
+        $state.go("toppers");
+    };
+}])
+.directive('qtbAccessView', function() {
+  return {
+    templateUrl: 'partials/acess-view.html'
+  };
+});;
 
 angular.module('quotable').config(['$compileProvider', '$httpProvider', function ($compileProvider, $httpProvider) {
     // uncomment for production

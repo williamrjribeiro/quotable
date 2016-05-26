@@ -9,12 +9,7 @@
             <h1><a href="/">Quotable</a></h1>
             <h2>Source That Quote</h2>
         </header>
-        <div ng-hide="('/signup' | isState) || ('/signin' | isState) || (userCredentials)">
-            <a ui-sref="/signup">Signup now!</a> or <a ui-sref="/signin">Sign in</a>
-        </div>
-        <div ng-show="(userCredentials)">
-            <a ng-click="BaseState.signOut()">Logout - TODO: Refactor this to a Component</a>
-        </div>
+        <qtb-access-view></qtb-access-view>
         <div ui-view ></div>
 
         <footer><h5>by William R. J. Ribeiro - @bill_bsb</h5></footer>

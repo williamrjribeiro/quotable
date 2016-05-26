@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongo from 'mongodb';
 import Q from 'q';
 import bcrypt from 'bcrypt-nodejs';
+// import {Utils} from '../crossenv/utils'; //TODO: Make this work and delete local const UTILS.
 
 const C = {
     MOST_LIKED: {
@@ -162,7 +163,7 @@ dbClient.connect("quotable-dev");
 const app = express();
 
 app.use(express.static(__dirname + '/../public'));
-app.use(morgan('dev'));
+app.use(morgan('dev')); // HTTP Request Logger
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -193,34 +194,34 @@ app.route('/api/mostLiked/:target?')
 
 app.route('/api/users/:userId?')
 .get((req, resp, next) => {
-    console.log("[/api/users] userId:", req.params.userId);
+    //console.log("[/api/users] userId:", req.params.userId);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getUser(req.params.userId).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId?')
 .get((req, resp, next) => {
-    console.log("[/api/authors] authorId:", req.params.authorId);
+    //console.log("[/api/authors] authorId:", req.params.authorId);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getAuthor(req.params.authorId).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId/quotes')
 .get((req, resp, next) => {
-    console.log(`[/api/authors/${req.params.authorId}]`);
+    //console.log(`[/api/authors/${req.params.authorId}]`);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getQuotesByAuthor(req.params.authorId).then(bf).catch(bf);
 });
 
 app.route('/api/sources/:sourceId/quotes')
 .get((req, resp, next) => {
-    console.log("[/api/sources/] sourceId:", req.params.sourceId);
+    //console.log("[/api/sources/] sourceId:", req.params.sourceId);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getQuotesBySource(req.params.sourceId).then(bf).catch(bf);
 });
 
 app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
-    console.log("[/api/verifyCredentials/] body:", req.body);
+    //console.log("[/api/verifyCredentials/] body:", req.body);
 
     if(!req.body) return resp.sendStatus(400);
     let credentials = req.body || {};
@@ -251,7 +252,7 @@ app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
 });
 
 app.post('/api/signup', jsonParser, (req, resp) => {
-    console.log("[/api/signup/] body:", req.body);
+    //console.log("[/api/signup/] body:", req.body);
 
     function _preprocessNewUser(newUser){
         console.log("[/api/signup/_preprocessNewUser]");
