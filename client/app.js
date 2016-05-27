@@ -36,13 +36,17 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.getContributionsByUser] userId:",userId);
             return $http.get(`/api/users/${userId}/contributions?limit=${limit}`);
         },
-        addUser(user) : Object {
+        addUser(user:Object) : Object {
             console.log("[ApiService.addUser] user.id:",user.id);
             return $http.post(`/api/signup`, user);
         },
-        verifyCredentials(credentials) : Object {
+        verifyCredentials(credentials:Object) : Object {
             console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
             return $http.post(`/api/verifyCredentials`, credentials);
+        },
+        likeIt(quoteId:string, userId:string) : Object {
+            console.log("[ApiService.likeIt] quoteId:",quoteId,", userId:", userId);
+            return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId});
         }
     };
 }])
@@ -76,7 +80,7 @@ angular.module('quotable', ['ui.router'] )
         }
     };
 }])
-.config(function($stateProvider, $urlRouterProvider){
+.config(($stateProvider, $urlRouterProvider) => {
     let _selectedUser = null;
     let _selectedAuthor = null;
     let _selectedSource = null;
@@ -87,7 +91,7 @@ angular.module('quotable', ['ui.router'] )
     $stateProvider.state('toppers',{
         url: '/toppers',
         templateUrl: './partials/toppers.html',
-        controller: function ($scope, $state, ApiService, BaseState){
+        controller: ($scope, $state, ApiService, BaseState) => {
             console.log("[toppers.controller]");
 
             $scope.BaseState = BaseState;
@@ -129,9 +133,9 @@ angular.module('quotable', ['ui.router'] )
     .state("/signup", {
         url:"/signup",
         templateUrl: "./partials/signup.html",
-        controller: function ($rootScope, $scope, $state, ApiService){
+        controller: ($rootScope, $scope, $state, ApiService) => {
             console.log("[SigunUpCtrl]");
-            $scope.addUser = function(user){
+            $scope.addUser = (user) => {
                 console.log("[SigunUpCtrl.addUser]");
                 ApiService.addUser(user).then((resp) => {
                     console.log("[SigunUpCtrl.addUser.then] resp:", resp);
@@ -148,9 +152,9 @@ angular.module('quotable', ['ui.router'] )
     .state("/signin", {
         url:"/signin",
         templateUrl: "./partials/signin.html",
-        controller: function ($rootScope, $scope, $state, ApiService){
+        controller: ($rootScope, $scope, $state, ApiService) => {
             console.log("[SignInCtrl]");
-            $scope.verifyCredentials = function(credentials){
+            $scope.verifyCredentials = (credentials) => {
                 console.log("[SignInCtrl.verifyCredentials]");
                 ApiService.verifyCredentials(credentials).then((resp) => {
                     console.log("[SignInCtrl.verifyCredentials.then] data:", resp.data);
@@ -167,7 +171,7 @@ angular.module('quotable', ['ui.router'] )
     .state("profile", {
         url:"/users/:userId",
         templateUrl: "./partials/profile.html",
-        controller: function ($rootScope, $stateParams, $scope, $state, ApiService, BaseState){
+        controller: ($rootScope, $stateParams, $scope, $state, ApiService, BaseState) => {
             console.log("[ProfileCtrl] userId:", $stateParams.userId);
             $scope.BaseState = BaseState;
 
@@ -198,7 +202,7 @@ angular.module('quotable', ['ui.router'] )
     .state('author',{
         url: '/:authorId',
         templateUrl: './partials/author.html',
-        controller: function ($stateParams, $scope, ApiService, BaseState){
+        controller: ($stateParams, $scope, ApiService, BaseState) => {
             console.log("[authorCtrl] authorId:", $stateParams.authorId);
             const authorId = $stateParams.authorId;
             $scope.BaseState = BaseState;
@@ -229,7 +233,7 @@ angular.module('quotable', ['ui.router'] )
     .state('source',{
         url: '/:authorId/:sourceId',
         templateUrl: './partials/source-quotes.html',
-        controller: function ($stateParams, $scope, ApiService, BaseState){
+        controller: ($stateParams, $scope, ApiService, BaseState) => {
             console.log("[sourceCtrl] _selectedAuthor:", _selectedAuthor,", _selectedSource:", _selectedSource);
             const sourceId = $stateParams.sourceId;
             const authorId = $stateParams.authorId;
@@ -259,21 +263,38 @@ angular.module('quotable', ['ui.router'] )
         controllerAs: 'sourceCtrl'
     });
 })
-.controller('AccessViewController', ['$rootScope', '$scope', '$state',function ($rootScope, $scope, $state){
+.controller('AccessViewController', ['$rootScope', '$scope', '$state', ($rootScope, $scope, $state) => {
     console.log("[AccessViewController]");
-    $scope.signOut = function() {
+    $scope.signOut = () => {
         console.log("[AccessViewController.signOut]");
         $rootScope.userCredentials = null;
         $state.go("toppers");
     };
 }])
-.directive('qtbAccessView', function() {
+.directive('qtbAccessView', () => {
   return {
     templateUrl: 'partials/acess-view.html'
   };
-});;
+})
+.component('qtbLikes', {
+    templateUrl: 'partials/likes.html',
+    bindings: {
+        val: '<',
+        quoteId: '<'
+    },
+    controller: function LikesController($scope, $rootScope, ApiService){
+        //console.log('[LikesController] this:',this);
+        var ctrl = this;
+        ctrl.signedIn = $rootScope.userCredentials ? true : false;
+        ctrl.label = " like" + (ctrl.val > 1 ? "s":"");
+        ctrl.likeIt = () => {
+            console.log('[LikesController.likeIt] quote_id:', ctrl.quote_id);
+            ApiService.likeIt(ctrl.quoteId, $rootScope.userCredentials._id);
+        };
+    }
+});
 
-angular.module('quotable').config(['$compileProvider', '$httpProvider', function ($compileProvider, $httpProvider) {
+angular.module('quotable').config(['$compileProvider', '$httpProvider', ($compileProvider, $httpProvider) => {
     // uncomment for production
     $compileProvider.debugInfoEnabled(false);
     $httpProvider.useApplyAsync( true );

@@ -5,8 +5,6 @@
         "email": "john@doe.com",
         "hash_p": "$2a$10$WY4bQzzytY/nYFSxd6.nGObv.hWppsqTvyhbD10.mZ6SQX/t1O4I2",
         "role": "admin",
-        "likes": [
-        ],
         "contributions": [
             "contrib_00001","contrib_00002","contrib_00005","contrib_00006","contrib_00007"
         ]
@@ -17,8 +15,6 @@
         "email": "nobody@email.com",
         "hash_p": "$2a$10$jPgrAjSNL7KGN17QW2BGFuT30gz.ncDQfooRDmR.nmp35SMvSG9iK",
         "role": "moderator",
-        "likes": [
-        ],
         "contributions": [
             "contrib_00003","contrib_00008","contrib_00009","contrib_00010","contrib_00011"
         ]
@@ -29,8 +25,6 @@
         "email": "jane@doe.com",
         "hash_p": "$2a$10$jLsme2MaCQjk9/YDutg9puPmg8wnM79AVhVVOryhQ0YE7UYmAvfjC",
         "role": "user",
-        "likes": [
-        ],
         "points": 0,
         "contributions": [
             "contrib_00004","contrib_00012","contrib_00013","contrib_00014","contrib_00015","contrib_00016","contrib_00017"

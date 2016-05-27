@@ -121,7 +121,7 @@
     "_id": "quote_00009",
     "source_id": null,
     "author_id": "neil_gaiman",
-    "likes": 0,
+    "likes": 1,
     "text": "Sometimes the best way to learn something is by doing it wrong and looking at what you did",
     "locations": {
       "kindle": null,
@@ -199,7 +199,7 @@
   "_id": "quote_00014",
   "source_id": "the_lord_of_the_rings_the_fellowship_of_the_ring",
   "author_id": "gandalf",
-  "likes": 0,
+  "likes": 2,
   "text": "You shall not pass!",
   "locations": {
     "timing": "02:26:47"
@@ -212,7 +212,7 @@
   "_id": "quote_00015",
   "source_id": "never_gonna_give_you_up",
   "author_id": "rick_astley",
-  "likes": 0,
+  "likes": 3,
   "text": "Never gonna give you up\nNever gonna let you down\nNever gonna run around and desert you",
   "locations": {
     "timing": "00:00:43"

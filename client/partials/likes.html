@@ -1,0 +1,2 @@
+<span ng-if="(!$ctrl.signedIn || !$ctrl.quoteId)">{{$ctrl.val}} {{$ctrl.label}}</span>
+<span ng-if="($ctrl.signedIn && $ctrl.quoteId)"><a href ng-click="$ctrl.likeIt()">{{$ctrl.val}} {{$ctrl.label}}</a></span>

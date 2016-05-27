@@ -301,7 +301,6 @@ app.post('/api/signup', jsonParser, (req, resp) => {
     if(!newUser.id || !newUser.name || !newUser.password || !newUser.email || !newUser.role )
         resp.sendStatus(400);
     else {
-        //const hp = UTILS.hashPassword(user.password);
         dbClient.getUserById(newUser.id).then((result) => {
             console.log("[/api/signup/getUserById] result:", result);
             if(result){
@@ -324,6 +323,17 @@ app.post('/api/signup', jsonParser, (req, resp) => {
             resp.sendStatus(500);
         });
     }
+});
+
+app.post('/api/quotes/:quoteId/like', jsonParser, (req, resp) => {
+    console.log(`[/api/quotes/:quoteId/like] body:`, req.body);
+    if(!req.body) return resp.sendStatus(400);
+    const userId = req.body.userId;
+    dbClient.getUserById(userId).then((result) => {
+    }).catch((error) => {
+        console.error("[/api/signup/] error", error);
+        resp.sendStatus(500);
+    });
 });
 
 app.listen(3000, () => console.log("Express Server listening on port 3000"));

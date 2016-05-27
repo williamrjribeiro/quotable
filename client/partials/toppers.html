@@ -3,7 +3,7 @@
 <ol ng-if="!loadingD">
     <li ng-repeat="quote in mysteriousQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by Unknown Author! from Unknown Source! - {{quote.likes}} likes</h4>
+        <h4>by Unknown Author! from Unknown Source! - <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h4>
     </li>
 </ol>
 
@@ -14,7 +14,7 @@
 <ol ng-if="!loadingC">
     <li ng-repeat="quote in unsourcedQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by <a href="javascript:void(0)" ng-click="BaseState.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from  - Unknown Source! {{quote.likes}} likes</h4>
+        <h4>by <a href ng-click="BaseState.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from  - Unknown Source! <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h4>
     </li>
 </ol>
 
@@ -24,7 +24,7 @@
 <h5 ng-if="loadingB">loading...</h5>
 <ol ng-if="!loadingB">
     <li ng-repeat="source in knownSources">
-        <h3><a href="javascript:void(0)" ng-click="BaseState.toSourceState(source.author_id[0], source._id)">{{source.title}}</a> - {{source.total_likes}} likes</h3>
+        <h3><a href ng-click="BaseState.toSourceState(source.author_id[0], source._id)">{{source.title}}</a> - <qtb-likes val="source.total_likes" quote-id=""></qtb-likes></h3>
     </li>
 </ol>
 
@@ -34,6 +34,6 @@
 <h5 ng-if="loadingA">loading...</h5>
 <ol ng-if="!loadingA">
     <li ng-repeat="author in knownAuthors">
-        <h3><a href="javascript:void(0)" ng-click="BaseState.toAuthorState(author._id)">{{author.name}}</a> - {{author.total_likes}} likes</h3>
+        <h3><a href ng-click="BaseState.toAuthorState(author._id)">{{author.name}}</a> - <qtb-likes val="author.total_likes" quote-id=""></qtb-likes></h3>
     </li>
 </ol>

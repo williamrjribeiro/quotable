@@ -18,6 +18,8 @@ Setup MongoDB
 
 `mongoimport --db quotable-dev --collection contributions --type json --file client/seed-data-contributions.json --jsonArray --drop`
 
+`mongoimport --db quotable-dev --collection likes --type json --file client/seed-data-likes.json --jsonArray --drop`
+
 Contributions Points
 --------------
 In order to promote user contributions, there's a basic gamified system in place. Every kind of contribution has some point values. Points can give you some cool rewards and permissions and be at the top of the Leader Board. (* All TBD*)

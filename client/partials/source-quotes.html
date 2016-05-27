@@ -8,6 +8,6 @@
 <h5 ng-if="loading">loading...</h5>
 <ol ng-if="!loading">
     <li ng-repeat="quote in quotes">
-        <h3>"{{quote.text}}" - {{quote.likes}} likes</h3>
+        <h3>"{{quote.text}}" - <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h3>
     </li>
 </ol>

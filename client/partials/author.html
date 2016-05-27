@@ -21,7 +21,7 @@
 <ol ng-if="!loadingQuotes">
     <li ng-repeat="quote in unsourcedQuotes">
         <div>
-            <h2><a href="javascript:void(0)" ng-click="onQuoteClick(quote._id)">{{quote.text}}</a> - {{quote.likes}} likes</h2>
+            <h2><a href="javascript:void(0)" ng-click="onQuoteClick(quote._id)">{{quote.text}}</a> - <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h2>
         </div>
     </li>
 </ol>
