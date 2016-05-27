@@ -129,6 +129,15 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
+        getContributionsByUser(userId:string) : Object {
+            console.log("[dbClient.getContributionsByUser] userId:", userId);
+            let deferred = Q.defer();
+            _db.collection('contributions').aggregate([
+                {"$match": {"who": userId}}
+                ,{"$sort": {"likes": -1}}
+            ]).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
         addUser(newUser:Object) : Object {
             console.log("[dbClient.addUser] newUser:", newUser);
             const deferred = Q.defer();
@@ -197,6 +206,13 @@ app.route('/api/users/:userId?')
     //console.log("[/api/users] userId:", req.params.userId);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.getUser(req.params.userId).then(bf).catch(bf);
+});
+
+app.route('/api/users/:userId/contributions')
+.get((req, resp, next) => {
+    //console.log(`[/api/users/${req.params.userId}/contributions]`);
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getContributionsByUser(req.params.userId).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId?')

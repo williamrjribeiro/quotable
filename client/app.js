@@ -32,6 +32,10 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
             return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
         },
+        getContributionsByUser(userId : string, limit=20) : Object {
+            console.log("[ApiService.getContributionsByUser] userId:",userId);
+            return $http.get(`/api/users/${userId}/contributions?limit=${limit}`);
+        },
         addUser(user) : Object {
             console.log("[ApiService.addUser] user.id:",user.id);
             return $http.post(`/api/signup`, user);
@@ -59,6 +63,10 @@ angular.module('quotable', ['ui.router'] )
             console.log("[BaseState.toQuotesState] id:", id);
             $state.go('author.source.quotes', {sourceId: id});
         },
+        toProfileState(id: string): void{
+            console.log("[BaseState.toProfileState] id:", id);
+            $state.go('profile', {userId: id});
+        },
         displayLang(lang: string): string {
             console.log("[BaseState.displayLang] lang:", lang);
             switch(lang){
@@ -69,6 +77,7 @@ angular.module('quotable', ['ui.router'] )
     };
 }])
 .config(function($stateProvider, $urlRouterProvider){
+    let _selectedUser = null;
     let _selectedAuthor = null;
     let _selectedSource = null;
 
@@ -144,6 +153,7 @@ angular.module('quotable', ['ui.router'] )
                 ApiService.verifyCredentials(credentials).then((resp) => {
                     console.log("[SignInCtrl.verifyCredentials.then] data:", resp.data);
                     $rootScope.userCredentials = resp.data.user;
+                    _selectedUser = resp.data.user;
                     $state.go("profile", {userId: $rootScope.userCredentials._id});
                 }).catch((err) => {
                     console.warn(err);
@@ -155,9 +165,31 @@ angular.module('quotable', ['ui.router'] )
     .state("profile", {
         url:"/users/:userId",
         templateUrl: "./partials/profile.html",
-        controller: function ($rootScope, $stateParams, $scope, $state, ApiService){
+        controller: function ($rootScope, $stateParams, $scope, $state, ApiService, BaseState){
             console.log("[ProfileCtrl] userId:", $stateParams.userId);
-            $scope.user = $rootScope.userCredentials;
+            $scope.BaseState = BaseState;
+
+            const userId = $stateParams.userId;
+            if(_selectedUser && _selectedUser._id === userId)
+                $scope.user = _selectedUser;
+            else {
+                ApiService.getUser(userId).then((resp) => {
+                    console.log("[ProfileCtrl.getUser.then] data:", resp.data);
+                    $scope.user = resp.data;
+                    _selectedUser = resp.data;
+                }).catch((err) => {
+                    console.warn(err);
+                });
+            }
+
+            $scope.loadingContribs = true;
+            ApiService.getContributionsByUser(userId).then((resp) => {
+                console.log("[ProfileCtrl.getContributionsByUser.then] data:", resp.data);
+                $scope.contributions = resp.data;
+                $scope.loadingContribs = false;
+            }).catch((err) => {
+                console.warn(err);
+            });
         },
         controllerAs: "ProfileCtrl"
     })
