@@ -3,7 +3,7 @@
     "_id": "quote_00001",
     "source_id": "you_are_not_a_gadget",
     "author_id": "jaron_lanier",
-    "likes": 100,
+    "likes": 0,
     "text": "To be a person you have to find a sweet spot in which you both invent yourself and are real",
     "locations": {
       "kindle": "3369-3372",
@@ -18,7 +18,7 @@
     "_id": "quote_00002",
     "source_id": "you_are_not_a_gadget",
     "author_id": "jaron_lanier",
-    "likes": 102,
+    "likes": 0,
     "text": "What makes something trully real is that it is impossible to represent it to completion",
     "locations": {
       "kindle": "2450-2451",
@@ -32,7 +32,7 @@
     "_id": "quote_00003",
     "source_id": "you_are_not_a_gadget",
     "author_id": "jaron_lanier",
-    "likes": 103,
+    "likes": 0,
     "text": "'Troll' is a term for an anonymous person who is abusive in an online environment",
     "locations": {
       "kindle": "1180-1181",
@@ -47,7 +47,7 @@
     "_id": "quote_00004",
     "source_id": "american_gods",
     "author_id": "neil_gaiman",
-    "likes": 200,
+    "likes": 0,
     "text": "Life is a disease: sexually transmitted, and invariably fatal",
     "locations": {
       "kindle": null,
@@ -61,7 +61,7 @@
     "_id": "quote_00005",
     "source_id": "american_gods",
     "author_id": "neil_gaiman",
-    "likes": 201,
+    "likes": 0,
     "text": "Every hour wounds. The last one kills",
     "locations": {
       "kindle": null,
@@ -76,7 +76,7 @@
     "_id": "quote_00006",
     "source_id": "american_gods",
     "author_id": "neil_gaiman",
-    "likes": 202,
+    "likes": 0,
     "text": "Even nothing cannot last forever",
     "locations": {
       "kindle": null,
@@ -91,7 +91,7 @@
     "_id": "quote_00007",
     "source_id": "the_art_of_asking",
     "author_id": "amanda_palmer",
-    "likes": 300,
+    "likes": 0,
     "text": "Not everybody wants to be looked at. Everybody wants to be seen",
     "locations": {
       "kindle": null,
@@ -106,7 +106,7 @@
     "_id": "quote_00008",
     "source_id": null,
     "author_id": "william_shakespeare",
-    "likes": 112,
+    "likes": 0,
     "text": "Love all, trust a few, do wrong to none",
     "locations": {
       "kindle": null,
@@ -121,7 +121,7 @@
     "_id": "quote_00009",
     "source_id": null,
     "author_id": "neil_gaiman",
-    "likes": 12,
+    "likes": 0,
     "text": "Sometimes the best way to learn something is by doing it wrong and looking at what you did",
     "locations": {
       "kindle": null,
@@ -136,7 +136,7 @@
     "_id": "quote_00010",
     "source_id": null,
     "author_id": "jaron_lanier",
-    "likes": 150,
+    "likes": 0,
     "text": "Criticism is always easier than constructive solutions",
     "locations": {
       "kindle": null,
@@ -152,7 +152,7 @@
     "_id": "quote_00011",
     "source_id": null,
     "author_id": null,
-    "likes": 23,
+    "likes": 0,
     "text": "Be somebody who makes everybody fell like a somebody",
     "locations": {
       "kindle": null,
@@ -167,7 +167,7 @@
     "_id": "quote_00012",
     "source_id": null,
     "author_id": null,
-    "likes": 32,
+    "likes": 0,
     "text": "Look for something positive in each day, even if some days you have to look a little harder",
     "locations": {
       "kindle": null,
@@ -183,7 +183,7 @@
     "_id": "quote_00013",
     "source_id": null,
     "author_id": null,
-    "likes": 67,
+    "likes": 0,
     "text": "When it rains look for rainbows. When it's dark look for stars",
     "locations": {
       "kindle": null,
@@ -194,5 +194,31 @@
       "starts",
       "motivation"
     ]
-  }
+},
+{
+  "_id": "quote_00014",
+  "source_id": "the_lord_of_the_rings_the_fellowship_of_the_ring",
+  "author_id": "gandalf",
+  "likes": 0,
+  "text": "You shall not pass!",
+  "locations": {
+    "timing": "02:26:47"
+  },
+  "tags": [
+    "determination","meme"
+  ]
+},
+{
+  "_id": "quote_00015",
+  "source_id": "never_gonna_give_you_up",
+  "author_id": "rick_astley",
+  "likes": 0,
+  "text": "Never gonna give you up\nNever gonna let you down\nNever gonna run around and desert you",
+  "locations": {
+    "timing": "00:00:43"
+  },
+  "tags": [
+    "promise","meme"
+  ]
+}
 ]

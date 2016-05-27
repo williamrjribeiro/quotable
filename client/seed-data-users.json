@@ -1,9 +1,9 @@
 [
     {
-        "name": "William R. J. Ribeiro",
-        "_id": "bill_bsb",
-        "email": "william.ribeiro@gmail.com",
-        "hash_p": "",
+        "name": "John Doe",
+        "_id": "john_doe",
+        "email": "john@doe.com",
+        "hash_p": "$2a$10$WY4bQzzytY/nYFSxd6.nGObv.hWppsqTvyhbD10.mZ6SQX/t1O4I2",
         "role": "admin",
         "likes": [
         ],
@@ -12,10 +12,10 @@
         ]
     },
     {
-        "name": "Diana Lourenço",
-        "_id": "dilourenco_",
-        "email": "lourenco.diana@gmail.com",
-        "hash_p": "$2a$10$6ODV7cLbubdbxxYsujyg0uHyCGnt8EGQhRzS46/iZa8LEw6DiYMoW",
+        "name": "Mr. Nobody",
+        "_id": "mr_nobody",
+        "email": "nobody@email.com",
+        "hash_p": "$2a$10$jPgrAjSNL7KGN17QW2BGFuT30gz.ncDQfooRDmR.nmp35SMvSG9iK",
         "role": "moderator",
         "likes": [
         ],
@@ -24,10 +24,10 @@
         ]
     },
     {
-        "name": "Carina Lourenço",
-        "_id": "carina_lourenco",
-        "email": "carina.s.lourenco@gmail.com",
-        "hash_p": "",
+        "name": "Jane Doe",
+        "_id": "jane_doe",
+        "email": "jane@doe.com",
+        "hash_p": "$2a$10$jLsme2MaCQjk9/YDutg9puPmg8wnM79AVhVVOryhQ0YE7UYmAvfjC",
         "role": "user",
         "likes": [
         ],

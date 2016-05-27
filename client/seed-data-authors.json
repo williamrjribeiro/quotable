@@ -59,5 +59,39 @@
     "nationality": "English",
     "sources": [
     ]
+},
+{
+  "name": "Gandalf",
+  "_id":  "gandalf",
+  "born": null,
+  "death": null,
+  "type": "Fictional Character",
+  "nationality": null,
+  "sources": [
+    {
+      "title":"The Lord of the Rings: The Fellowship of the Ring",
+      "_id":  "the_lord_of_the_rings_the_fellowship_of_the_ring",
+      "type": "movie",
+      "publish_date": 2001,
+      "original_lang": "eng"
   }
+  ]
+},
+{
+  "name": "Rick Astley",
+  "_id":  "rick_astley",
+  "born": "1966-02-06",
+  "death": null,
+  "type": "Singer",
+  "nationality": "English",
+  "sources": [
+    {
+      "title":"Never Gonna Give You Up",
+      "_id":  "never_gonna_give_you_up",
+      "type": "music",
+      "publish_date": 1987,
+      "original_lang": "eng"
+  }
+  ]
+}
 ]
