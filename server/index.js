@@ -142,7 +142,7 @@ const dbClient = function(){
             console.log("[dbClient.addUser] newUser:", newUser);
             const deferred = Q.defer();
             _db.collection('users').insertOne(newUser, (err, item) => {
-                _resolver(deferred, err, item);
+                _resolver(deferred, err, newUser);
             });
             return deferred.promise;
         },
@@ -311,7 +311,8 @@ app.post('/api/signup', jsonParser, (req, resp) => {
                 _preprocessNewUser(newUser).then((ppnuser) => {
                     console.log("[/api/signup/_preprocessNewUser/then] ppnuser:", ppnuser);
                     dbClient.addUser(ppnuser).then((result) => {
-                        resp.status(201).json({uri: `/users/${ppnuser._id}`, user: ppnuser});
+                        console.log("[/api/signup/_preprocessNewUser/addUser/then] result:", result);
+                        resp.status(201).json({uri: `/users/${ppnuser._id}`, user: result});
                     });
                 }).catch((err) => {
                     console.error("[/api/signup/getUserById] err:", err);

@@ -129,13 +129,15 @@ angular.module('quotable', ['ui.router'] )
     .state("/signup", {
         url:"/signup",
         templateUrl: "./partials/signup.html",
-        controller: function ($scope, $state, ApiService){
+        controller: function ($rootScope, $scope, $state, ApiService){
             console.log("[SigunUpCtrl]");
             $scope.addUser = function(user){
                 console.log("[SigunUpCtrl.addUser]");
                 ApiService.addUser(user).then((resp) => {
                     console.log("[SigunUpCtrl.addUser.then] resp:", resp);
-                    $state.go("toppers");
+                    $rootScope.userCredentials = resp.data.user;
+                    _selectedUser = resp.data.user;
+                    $state.go("profile", {userId: _selectedUser._id});
                 }).catch((err) => {
                     console.warn(err);
                 });
@@ -154,7 +156,7 @@ angular.module('quotable', ['ui.router'] )
                     console.log("[SignInCtrl.verifyCredentials.then] data:", resp.data);
                     $rootScope.userCredentials = resp.data.user;
                     _selectedUser = resp.data.user;
-                    $state.go("profile", {userId: $rootScope.userCredentials._id});
+                    $state.go("profile", {userId: _selectedUser._id});
                 }).catch((err) => {
                     console.warn(err);
                 });
