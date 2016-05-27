@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongo from 'mongodb';
 import Q from 'q';
 import bcrypt from 'bcrypt-nodejs';
+import dateFormat from 'dateformat';
 // import {Utils} from '../crossenv/utils'; //TODO: Make this work and delete local const UTILS.
 
 const C = {
@@ -151,6 +152,41 @@ const dbClient = function(){
             const deferred = Q.defer();
             _db.collection('users').findOne({"_id": credentials.id, "hash_p": credentials.hash_p}, (err, item) => {
                 _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
+        getLikeByUser(quoteId:string,userId:string) : Object {
+            console.log("[dbClient.getLikeByUser] quoteId:",quoteId,", userId:",userId);
+            const deferred = Q.defer();
+            _db.collection('likes').findOne({"user_id": userId, "quote_id": quoteId}, (err, item) => {
+                _resolver(deferred, err, item);
+            });
+            return deferred.promise;
+        },
+        like(quoteId:string,userId:string) : Object {
+            console.log("[dbClient.like] quoteId:",quoteId,", userId:",userId);
+            const deferred = Q.defer();
+            const like = {
+                "user_id": userId,
+                "quote_id": quoteId,
+                "datetime": dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")
+            };
+            let likesUpdated = false;
+            let quotesUpdated = false;
+            let resolve = (deferred, err, item) => {
+                if(likesUpdated && quotesUpdated)
+                    _resolver(deferred, err, item);
+            };
+            _db.collection('likes').insertOne(like, (err, item) => {
+                likesUpdated = true;
+                resolve(deferred, err, item);
+            });
+            _db.collection('quotes').findOneAndUpdate(
+                {_id: quoteId},
+                {$inc: {likes: 1}}
+            , (err, item) => {
+                quotesUpdated = true;
+                resolve(deferred, err, item);
             });
             return deferred.promise;
         },
@@ -329,7 +365,18 @@ app.post('/api/quotes/:quoteId/like', jsonParser, (req, resp) => {
     console.log(`[/api/quotes/:quoteId/like] body:`, req.body);
     if(!req.body) return resp.sendStatus(400);
     const userId = req.body.userId;
-    dbClient.getUserById(userId).then((result) => {
+    const quoteId = req.params.quoteId;
+    dbClient.getLikeByUser(quoteId, userId).then((like) => {
+        console.log(`[/api/quotes/:quoteId/like/getLikeByUser/then] result:`, like);
+        if(!like){
+            dbClient.like(quoteId, userId).then((result) => {
+                console.log(`[/api/quotes/:quoteId/like/getLikeByUser/then/like/then] result:`, result);
+                resp.status(200).json(result);
+            });
+        }
+        else {
+            console.log(`[/api/quotes/:quoteId/like/getLikeByUser/then] LIKE already given. Remove it?`);
+        }
     }).catch((error) => {
         console.error("[/api/signup/] error", error);
         resp.sendStatus(500);

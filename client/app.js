@@ -286,11 +286,18 @@ angular.module('quotable', ['ui.router'] )
         //console.log('[LikesController] this:',this);
         var ctrl = this;
         ctrl.signedIn = $rootScope.userCredentials ? true : false;
-        ctrl.label = " like" + (ctrl.val > 1 ? "s":"");
+        ctrl.label = updateLabel(ctrl.val);
         ctrl.likeIt = () => {
             console.log('[LikesController.likeIt] quote_id:', ctrl.quote_id);
-            ApiService.likeIt(ctrl.quoteId, $rootScope.userCredentials._id);
+            ApiService.likeIt(ctrl.quoteId, $rootScope.userCredentials._id).then((resp) => {
+                console.log('[LikesController.likeIt.then] resp:', resp);
+                ctrl.val++;
+                ctrl.label = updateLabel(ctrl.val);
+            });
         };
+        function updateLabel(val){
+            return " like" + (val > 1 ? "s":"");
+        }
     }
 });
 
