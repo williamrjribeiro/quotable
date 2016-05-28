@@ -5,9 +5,12 @@
     <b>Role:</b> {{user.role}}
 </div>
 <h2>Likes:</h2>
-<ol>
-    <li ng-repeat="like in user.likes">
-        <!-- TODO Likes List -->
+<h5 ng-if="loadingLikes">loading...</h5>
+<ol ng-if="!loadingLikes">
+    <li ng-repeat="like in userLikes">
+        <div>
+            Liked <i>{{like.quote_id}}</i> on <i>{{like.datetime}}</i>
+        </div>
     </li>
 </ol>
 
@@ -18,10 +21,10 @@
         <div>
             <i>{{contrib.kind}}</i>
             <i>{{contrib.col}}
-            <a href="javascript:void(0)" ng-click="BaseState.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
+            <a href ng-click="BaseState.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
             on <i>{{contrib.submitted}}</i>.
             Approved by
-            <i><a href="javascript:void(0)" ng-click="BaseState.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
+            <i ng-if="(contrib.col === 'author')"><a href ng-click="BaseState.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
             on <i>{{contrib.approved.date}}</i>.
         </div>
     </li>

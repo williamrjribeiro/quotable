@@ -52,14 +52,14 @@ const dbClient = function(){
                 }
             });
         },
-        mostLiked(target:string, limit:number) : Object {
+        mostLiked(target:string, limit=3) : Object {
             console.log("[dbClient.mostLiked] target:", target,", limit:", limit);
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
                 _db.collection('quotes').aggregate([
                     {"$group":{"_id":"$author_id","total_likes":{"$sum":"$likes"}}}
+                    ,{"$limit":limit}
                     ,{"$sort":{"total_likes":-1}}
-                    ,{"$limit":3}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.SOURCES){
@@ -67,25 +67,24 @@ const dbClient = function(){
                     {"$match": {"source_id": {"$ne": null}}}
                     ,{"$project" : { "author_id" : 1 , "source_id" : 1, "likes": 1 } }
                     ,{"$group":{"_id":"$source_id","author_id":{"$addToSet":"$author_id"},"total_likes":{"$sum":"$likes"}}}
-                    ,{"$sort":{"total_likes":-1}}
                     ,{"$limit": limit}
+                    ,{"$sort":{"total_likes":-1}}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.UNSOURCED){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": {"$ne": null}}}
-                    ,{"$sort": {"likes": -1}}
                     ,{"$limit": limit}
+                    ,{"$sort": {"likes": -1}}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.MYSTERIOUS){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": null}}
-                    ,{"$sort": {"likes": -1}}
                     ,{"$limit": limit}
+                    ,{"$sort": {"likes": -1}}
                 ]).toArray(_resolver.bind(this, deferred));
             }
-
             return deferred.promise;
         },
         getUser(userId:string) : Object {
@@ -104,20 +103,22 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getQuotesBySource(sourceId:string) : Object {
-            console.log("[dbClient.getQuotesBySource] sourceId:", sourceId);
+        getQuotesBySource(sourceId:string, limit=20) : Object {
+            console.log("[dbClient.getQuotesBySource] sourceId:", sourceId,", limit:", limit);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
                 {"$match": {"source_id": sourceId}}
+                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
-        getQuotesByAuthor(authorId:string) : Object {
-            console.log("[dbClient.getQuotesByAuthor] authorId:", authorId);
+        getQuotesByAuthor(authorId:string, limit=20) : Object {
+            console.log("[dbClient.getQuotesByAuthor] authorId:", authorId,", limit:", limit);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
                 {"$match": {"author_id": authorId, "source_id": null}}
+                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
@@ -130,11 +131,12 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getContributionsByUser(userId:string) : Object {
+        getContributionsByUser(userId:string, limit=20) : Object {
             console.log("[dbClient.getContributionsByUser] userId:", userId);
             let deferred = Q.defer();
             _db.collection('contributions').aggregate([
                 {"$match": {"who": userId}}
+                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
@@ -163,8 +165,18 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        like(quoteId:string,userId:string) : Object {
-            console.log("[dbClient.like] quoteId:",quoteId,", userId:",userId);
+        getUserLikes(userId:string,limit=20) : Object {
+            console.log("[dbClient.getUserLikes] userId:",userId,", limit:",limit);
+            const deferred = Q.defer();
+            _db.collection('likes').aggregate([
+                {"$match": {"user_id": userId}}
+                ,{"$limit":limit}
+                ,{"$sort": {"datetime": -1}}
+            ]).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
+        toggleLike(quoteId:string,userId:string) : Object {
+            console.log("[dbClient.toggleLike] quoteId:",quoteId,", userId:",userId);
             const deferred = Q.defer();
             const like = {
                 "user_id": userId,
@@ -232,9 +244,9 @@ app.route('/api/mostLiked/:target?')
 .get((req, resp, next) => {
     console.log("[/api/mostLiked] target:", req.params.target,", limit:", req.query.limit);
     const target = req.params.target || C.MOST_LIKED.MYSTERIOUS;
-    const limit = req.query.limit;
+    const limit = parseInt(req.query.limit,10);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.mostLiked(target, parseInt(limit, 10)).then(bf).catch(bf);
+    dbClient.mostLiked(target, limit).then(bf).catch(bf);
 });
 
 app.route('/api/users/:userId?')
@@ -248,7 +260,16 @@ app.route('/api/users/:userId/contributions')
 .get((req, resp, next) => {
     //console.log(`[/api/users/${req.params.userId}/contributions]`);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getContributionsByUser(req.params.userId).then(bf).catch(bf);
+    const limit = parseInt(req.query.limit, 10)
+    dbClient.getContributionsByUser(req.params.userId, limit).then(bf).catch(bf);
+});
+
+app.route('/api/users/:userId/likes')
+.get((req, resp, next) => {
+    //console.log(`[/api/users/${req.params.userId}/likes]`);
+    const bf = _genericDbResult.bind(this, resp);
+    const limit = parseInt(req.query.limit, 10)
+    dbClient.getUserLikes(req.params.userId, limit).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId?')
@@ -262,14 +283,16 @@ app.route('/api/authors/:authorId/quotes')
 .get((req, resp, next) => {
     //console.log(`[/api/authors/${req.params.authorId}]`);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getQuotesByAuthor(req.params.authorId).then(bf).catch(bf);
+    const limit = parseInt(req.query.limit,10);
+    dbClient.getQuotesByAuthor(req.params.authorId, limit).then(bf).catch(bf);
 });
 
 app.route('/api/sources/:sourceId/quotes')
 .get((req, resp, next) => {
     //console.log("[/api/sources/] sourceId:", req.params.sourceId);
     const bf = _genericDbResult.bind(this, resp);
-    dbClient.getQuotesBySource(req.params.sourceId).then(bf).catch(bf);
+    const limit = parseInt(req.query.limit,10);
+    dbClient.getQuotesBySource(req.params.sourceId, limit).then(bf).catch(bf);
 });
 
 app.post('/api/verifyCredentials', jsonParser, (req, resp) => {
@@ -369,7 +392,7 @@ app.post('/api/quotes/:quoteId/like', jsonParser, (req, resp) => {
     dbClient.getLikeByUser(quoteId, userId).then((like) => {
         console.log(`[/api/quotes/:quoteId/like/getLikeByUser/then] result:`, like);
         if(!like){
-            dbClient.like(quoteId, userId).then((result) => {
+            dbClient.toggleLike(quoteId, userId).then((result) => {
                 console.log(`[/api/quotes/:quoteId/like/getLikeByUser/then/like/then] result:`, result);
                 resp.status(200).json(result);
             });

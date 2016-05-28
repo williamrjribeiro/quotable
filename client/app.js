@@ -20,6 +20,10 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.getUser] userId:",userId);
             return $http.get(`/api/users/${userId}`);
         },
+        getUserLikes(userId : string, limit=50) : Object {
+            console.log("[ApiService.getUser] userId:",userId);
+            return $http.get(`/api/users/${userId}/likes?limit=${limit}`);
+        },
         getAuthor(authorId : string) : Object {
             console.log("[ApiService.getAuthor] authorId:",authorId);
             return $http.get(`/api/authors/${authorId}`);
@@ -44,8 +48,8 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
             return $http.post(`/api/verifyCredentials`, credentials);
         },
-        likeIt(quoteId:string, userId:string) : Object {
-            console.log("[ApiService.likeIt] quoteId:",quoteId,", userId:", userId);
+        toggleLike(quoteId:string, userId:string) : Object {
+            console.log("[ApiService.toggleLike] quoteId:",quoteId,", userId:", userId);
             return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId});
         }
     };
@@ -196,6 +200,15 @@ angular.module('quotable', ['ui.router'] )
             }).catch((err) => {
                 console.warn(err);
             });
+
+            $scope.loadingLikes = true;
+            ApiService.getUserLikes(userId).then((resp) => {
+                console.log("[ProfileCtrl.getUserLikes.then] data:", resp.data);
+                $scope.userLikes = resp.data;
+                $scope.loadingLikes = false;
+            }).catch((err) => {
+                console.warn(err);
+            });
         },
         controllerAs: "ProfileCtrl"
     })
@@ -286,17 +299,17 @@ angular.module('quotable', ['ui.router'] )
         //console.log('[LikesController] this:',this);
         var ctrl = this;
         ctrl.signedIn = $rootScope.userCredentials ? true : false;
-        ctrl.label = updateLabel(ctrl.val);
-        ctrl.likeIt = () => {
-            console.log('[LikesController.likeIt] quote_id:', ctrl.quote_id);
-            ApiService.likeIt(ctrl.quoteId, $rootScope.userCredentials._id).then((resp) => {
-                console.log('[LikesController.likeIt.then] resp:', resp);
+        ctrl.likeLabel = updateLabel(ctrl.val);
+        ctrl.toggleLike = () => {
+            console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id);
+            ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id).then((resp) => {
+                console.log('[LikesController.toggleLike.then] resp:', resp);
                 ctrl.val++;
                 ctrl.label = updateLabel(ctrl.val);
             });
         };
         function updateLabel(val){
-            return " like" + (val > 1 ? "s":"");
+            return " like" + (val !== 1 ? "s":"");
         }
     }
 });
