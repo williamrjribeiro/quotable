@@ -48,13 +48,19 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
             return $http.post(`/api/verifyCredentials`, credentials);
         },
-        toggleLike(quoteId:string, userId:string) : Object {
+        toggleLike(quoteId:string, userId:string, isLike:boolean) : Object {
             console.log("[ApiService.toggleLike] quoteId:",quoteId,", userId:", userId);
-            return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId});
+            return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId, isLike: isLike});
         }
     };
 }])
 .factory('BaseState', ['$state','$rootScope', function BaseStateFactory($state, $rootScope){
+    $rootScope.loadedQuotes = [];
+    $rootScope.$on('$stateChangeStart',
+    function(event, toState, toParams, fromState, fromParams){
+        //console.warn("[BaseState.stateChangeStart] toState:", toState);
+        $rootScope.loadedQuotes = [];
+    });
     return {
         signOut() : void {
             console.log("[BaseState.signOut] userCredentials:", $rootScope.userCredentials);
@@ -95,7 +101,7 @@ angular.module('quotable', ['ui.router'] )
     $stateProvider.state('toppers',{
         url: '/toppers',
         templateUrl: './partials/toppers.html',
-        controller: ($scope, $state, ApiService, BaseState) => {
+        controller: ($rootScope, $scope, $state, ApiService, BaseState) => {
             console.log("[toppers.controller]");
 
             $scope.BaseState = BaseState;
@@ -123,12 +129,16 @@ angular.module('quotable', ['ui.router'] )
             ApiService.mostLiked("unsourced").then((resp) => {
                 resp.data.map((item) => {
                     item.author_name = Utils.camelCase(item.author_id);
+                    $rootScope.loadedQuotes.push(item._id);
                 });
                 $scope.loadingC = false;
                 $scope.unsourcedQuotes = resp.data;
             });
 
             ApiService.mostLiked().then((resp) => {
+                resp.data.map((item) => {
+                    $rootScope.loadedQuotes.push(item._id);
+                });
                 $scope.loadingD = false;
                 $scope.mysteriousQuotes = resp.data;
             });
@@ -215,7 +225,7 @@ angular.module('quotable', ['ui.router'] )
     .state('author',{
         url: '/:authorId',
         templateUrl: './partials/author.html',
-        controller: ($stateParams, $scope, ApiService, BaseState) => {
+        controller: ($stateParams, $rootScope, $scope, ApiService, BaseState) => {
             console.log("[authorCtrl] authorId:", $stateParams.authorId);
             const authorId = $stateParams.authorId;
             $scope.BaseState = BaseState;
@@ -237,6 +247,10 @@ angular.module('quotable', ['ui.router'] )
             });
 
             ApiService.getQuotesByAuthor(authorId).then((resp) => {
+                resp.data.map((item) => {
+                    item.author_name = Utils.camelCase(item.author_id);
+                    $rootScope.loadedQuotes.push(item._id);
+                });
                 $scope.unsourcedQuotes = resp.data;
                 $scope.loadingQuotes = false;
             });
@@ -246,7 +260,7 @@ angular.module('quotable', ['ui.router'] )
     .state('source',{
         url: '/:authorId/:sourceId',
         templateUrl: './partials/source-quotes.html',
-        controller: ($stateParams, $scope, ApiService, BaseState) => {
+        controller: ($stateParams, $rootScope, $scope, ApiService, BaseState) => {
             console.log("[sourceCtrl] _selectedAuthor:", _selectedAuthor,", _selectedSource:", _selectedSource);
             const sourceId = $stateParams.sourceId;
             const authorId = $stateParams.authorId;
@@ -269,6 +283,9 @@ angular.module('quotable', ['ui.router'] )
                 });
             }
             ApiService.getQuotesBySource(sourceId).then((resp) => {
+                resp.data.map((item) => {
+                    $rootScope.loadedQuotes.push(item._id);
+                });
                 $scope.quotes = resp.data;
                 $scope.loading = false;
             });
@@ -296,20 +313,39 @@ angular.module('quotable', ['ui.router'] )
         quoteId: '<'
     },
     controller: function LikesController($scope, $rootScope, ApiService){
-        //console.log('[LikesController] this:',this);
         var ctrl = this;
         ctrl.signedIn = $rootScope.userCredentials ? true : false;
         ctrl.likeLabel = updateLabel(ctrl.val);
+        ctrl.isLiked = isLiked(ctrl.val, ctrl.quoteId);
+        ctrl.likeToggle = ctrl.isLiked ? "Unlike" : "Like";
+
+        //console.log('[LikesController] ctrl:',ctrl);
+
         ctrl.toggleLike = () => {
-            console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id);
-            ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id).then((resp) => {
+            console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id,", isLiked:", ctrl.isLiked);
+            ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id, !ctrl.isLiked).then((resp) => {
                 console.log('[LikesController.toggleLike.then] resp:', resp);
-                ctrl.val++;
+                if(ctrl.isLiked){
+                    // Unlike it
+                    ctrl.isLiked = false;
+                    if(ctrl.val === 0)
+                        ctrl.val--;
+                    ctrl.likeToggle = "Like";
+                }
+                else {
+                    // Like it
+                    ctrl.isLiked = true;
+                    ctrl.val++;
+                    ctrl.likeToggle = "Unlike";
+                }
                 ctrl.label = updateLabel(ctrl.val);
             });
         };
-        function updateLabel(val){
+        function updateLabel(val:number) : string{
             return " like" + (val !== 1 ? "s":"");
+        }
+        function isLiked(val:number,id:string) : boolean {
+            return (val > 0 && $rootScope.loadedQuotes && $rootScope.loadedQuotes.indexOf(id) >= 0);
         }
     }
 });
