@@ -3,10 +3,18 @@ import angular from 'angular';
 import 'angular-ui-router';
 import {Utils} from '../crossenv/utils';
 angular.module('quotable', ['ui.router'] )
-.factory('ApiService', ['$http', function ApiServiceFactory($http){
+.factory('ApiService', ['$http','$q','$rootScope', function ApiServiceFactory($http, $q, $rootScope){
+    function _appendTransform(defaults, transform) {
+        //console.log("[ApiService._appendTransform]");
+        // We can't guarantee that the default transformation is an array
+        defaults = angular.isArray(defaults) ? defaults : [defaults];
+        // Append the new transformation to the defaults
+        return defaults.concat(transform);
+    }
+
     return {
         mostLiked (collectionName="mysterious",limit=3) : Object {
-            console.log("[ApiService.mostLiked] collectionName:",collectionName,', limit:', limit);
+            console.log("[ApiService.mostLiked] collectionName: " + collectionName + ', limit: ' + limit);
             /* Most Liked URL Pattern
                /api/mostLiked/authors
                /api/mostLiked/sources
@@ -14,7 +22,19 @@ angular.module('quotable', ['ui.router'] )
                /api/mostLiked/unauthored
                /api/mostLiked/
             */
-            return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
+            if(collectionName === "authors" || collectionName === "sources")
+                return $http.get(`/api/mostLiked/${collectionName}?limit=${limit}`);
+            else {
+                // Testing $http.transformResponse to add keep loadedQuotes on the $rootScope
+                return $http({
+                    url:`/api/mostLiked/${collectionName}?limit=${limit}`,
+                    method: 'GET',
+                    transformResponse: _appendTransform($http.defaults.transformResponse, (value) => {
+                        $rootScope.loadedQuotes.add(value._id);
+                        return value;
+                    })
+                });
+            }
         },
         getUser(userId : string) : Object {
             console.log("[ApiService.getUser] userId:",userId);
@@ -30,11 +50,27 @@ angular.module('quotable', ['ui.router'] )
         },
         getQuotesBySource(sourceId : string, limit=20) : Object {
             console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
-            return $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`);
+            // Testing $q to add keep loadedQuotes on the $rootScope
+            let deferred = $q.defer();
+            $http.get(`/api/sources/${sourceId}/quotes?limit=${limit}`).then((resp) => {
+                resp.data.map((item) => {
+                    $rootScope.loadedQuotes.add(item._id);
+                });
+                deferred.resolve(resp);
+            });
+            return deferred.promise;
         },
         getQuotesByAuthor(authorId : string, limit=20) : Object {
             console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
-            return $http.get(`/api/authors/${authorId}/quotes?limit=${limit}`);
+            // Testing $http.transformResponse to add keep loadedQuotes on the $rootScope
+            return $http({
+                url:`/api/authors/${authorId}/quotes?limit=${limit}`,
+                method: 'GET',
+                transformResponse: _appendTransform($http.defaults.transformResponse, (value) => {
+                    $rootScope.loadedQuotes.add(value._id);
+                    return value;
+                })
+            });
         },
         getContributionsByUser(userId : string, limit=20) : Object {
             console.log("[ApiService.getContributionsByUser] userId:",userId);
@@ -55,11 +91,11 @@ angular.module('quotable', ['ui.router'] )
     };
 }])
 .factory('BaseState', ['$state','$rootScope', function BaseStateFactory($state, $rootScope){
-    $rootScope.loadedQuotes = [];
+    $rootScope.loadedQuotes = new Set();
     $rootScope.$on('$stateChangeStart',
     function(event, toState, toParams, fromState, fromParams){
-        //console.warn("[BaseState.stateChangeStart] toState:", toState);
-        $rootScope.loadedQuotes = [];
+        console.warn("[BaseState.stateChangeStart] toState: "+toState.name+", loadedQuotes.length: "+$rootScope.loadedQuotes.length);
+        $rootScope.loadedQuotes = new Set();
     });
     return {
         signOut() : void {
@@ -129,16 +165,12 @@ angular.module('quotable', ['ui.router'] )
             ApiService.mostLiked("unsourced").then((resp) => {
                 resp.data.map((item) => {
                     item.author_name = Utils.camelCase(item.author_id);
-                    $rootScope.loadedQuotes.push(item._id);
                 });
                 $scope.loadingC = false;
                 $scope.unsourcedQuotes = resp.data;
             });
 
             ApiService.mostLiked().then((resp) => {
-                resp.data.map((item) => {
-                    $rootScope.loadedQuotes.push(item._id);
-                });
                 $scope.loadingD = false;
                 $scope.mysteriousQuotes = resp.data;
             });
@@ -249,7 +281,6 @@ angular.module('quotable', ['ui.router'] )
             ApiService.getQuotesByAuthor(authorId).then((resp) => {
                 resp.data.map((item) => {
                     item.author_name = Utils.camelCase(item.author_id);
-                    $rootScope.loadedQuotes.push(item._id);
                 });
                 $scope.unsourcedQuotes = resp.data;
                 $scope.loadingQuotes = false;
@@ -283,9 +314,6 @@ angular.module('quotable', ['ui.router'] )
                 });
             }
             ApiService.getQuotesBySource(sourceId).then((resp) => {
-                resp.data.map((item) => {
-                    $rootScope.loadedQuotes.push(item._id);
-                });
                 $scope.quotes = resp.data;
                 $scope.loading = false;
             });
@@ -345,7 +373,13 @@ angular.module('quotable', ['ui.router'] )
             return " like" + (val !== 1 ? "s":"");
         }
         function isLiked(val:number,id:string) : boolean {
-            return (val > 0 && $rootScope.loadedQuotes && $rootScope.loadedQuotes.indexOf(id) >= 0);
+            if(val > 0){
+                if($rootScope.loadedQuotes){
+                    return $rootScope.loadedQuotes.has(id);
+                }
+            }
+            return false;
+            //return (val > 0 && $rootScope.loadedQuotes && $rootScope.loadedQuotes.indexOf(id) >= 0);
         }
     }
 });
