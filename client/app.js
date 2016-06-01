@@ -36,6 +36,10 @@ angular.module('quotable', ['ui.router'] )
                 });
             }
         },
+        getTotalLikes(args:Object) : Object {
+            console.log("[ApiService.getTotalLikes] args:",args);
+            return $http.get(`/api/${args.what}/${args.id}/likes/total`);
+        },
         getUser(userId : string) : Object {
             console.log("[ApiService.getUser] userId:",userId);
             return $http.get(`/api/users/${userId}`);
@@ -315,6 +319,11 @@ angular.module('quotable', ['ui.router'] )
                 _selectedAuthor = resp.data;
             });
 
+            ApiService.getTotalLikes({what:"author",id: authorId}).then((resp) => {
+                console.log("[authorCtrl.getTotalLikes] resp:",resp);
+                $scope.author.totalLikes = resp.data[0] ? resp.data[0].total_likes : 0;
+            });
+
             ApiService.getQuotesByAuthor(authorId).then((resp) => {
                 let quotes = resp.data;
                 if($rootScope.userCredentials){
@@ -356,6 +365,12 @@ angular.module('quotable', ['ui.router'] )
                     _selectedSource = $scope.source;
                 });
             }
+
+            ApiService.getTotalLikes({what:"source",id: sourceId}).then((resp) => {
+                console.log("[authorCtrl.getTotalLikes] resp:",resp);
+                $scope.source.totalLikes = resp.data[0] ? resp.data[0].total_likes : 0;
+            });
+
             ApiService.getQuotesBySource(sourceId).then((resp) => {
                 let quotes = resp.data;
                 if($rootScope.userCredentials){
@@ -406,9 +421,9 @@ angular.module('quotable', ['ui.router'] )
             const action = ctrl.hasLiked ? "unlike" : "like";
             ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id, action).then((resp) => {
                 console.log('[LikesController.toggleLike.then] resp:', resp);
-                if(!ctrl.hasLiked){
+                if(ctrl.hasLiked){
                     ctrl.hasLiked = false;
-                    if(ctrl.val === 0)
+                    if(ctrl.val > 0)
                         ctrl.val--;
                     ctrl.likeToggle = "Like";
                 }

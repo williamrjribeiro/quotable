@@ -3,7 +3,8 @@
     by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a>
 </h3>
 <div>
-    The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}
+    The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}} <br />
+    <b>Total likes:</b> {{source.totalLikes}}
 </div>
 <h5 ng-if="loading">loading...</h5>
 <ol ng-if="!loading">

@@ -87,6 +87,18 @@ const dbClient = function(){
             }
             return deferred.promise;
         },
+        getTotalLikes(what:string, id:string) : Object {
+            console.log("[dbClient.getTotalLikes] what:", what,", id:",id);
+            let deferred = Q.defer();
+            let whatId = what+"_id";
+            let matchVal = {};
+            matchVal[whatId] = id;
+            _db.collection('quotes').aggregate([
+                {"$match": matchVal},
+                {"$group":{"_id":"$"+whatId,"total_likes":{"$sum":"$likes"}}}
+            ]).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
         getUser(userId:string) : Object {
             console.log("[dbClient.getUser] userId:", userId);
             let deferred = Q.defer();
@@ -297,6 +309,15 @@ app.route('/api/mostLiked/:target?')
     const limit = parseInt(req.query.limit,10);
     const bf = _genericDbResult.bind(this, resp);
     dbClient.mostLiked(target, limit).then(bf).catch(bf);
+});
+
+app.route('/api/:what/:id/likes/total')
+.get((req, resp, next) => {
+    console.log("[/api/:what/:id/likes/total] target:", req.params.what,", id:", req.params.id);
+    const what = req.params.what;
+    const id = req.params.id;
+    const bf = _genericDbResult.bind(this, resp);
+    dbClient.getTotalLikes(what, id).then(bf).catch(bf);
 });
 
 app.route('/api/users/:userId?')
