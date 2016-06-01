@@ -175,6 +175,17 @@ const dbClient = function(){
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
+        findUserLikes(userId:string,quoteIds:string) : Object {
+            console.log("[dbClient.findUserLikes] userId:",userId,", quoteIds:",quoteIds);
+            const deferred = Q.defer();
+            _db.collection('likes').find({
+                user_id: userId,
+                $or:[
+                    {quote_id: {$in: quoteIds.split(",")}}
+                ]
+            },{quote_id: true}).toArray(_resolver.bind(this, deferred));
+            return deferred.promise;
+        },
         addLike(quoteId:string, userId:string) : Object {
             console.log("[dbClient.addLike] quoteId:",quoteId,", userId:",userId);
             const deferred = Q.defer();
@@ -305,10 +316,14 @@ app.route('/api/users/:userId/contributions')
 
 app.route('/api/users/:userId/likes')
 .get((req, resp, next) => {
-    //console.log(`[/api/users/${req.params.userId}/likes]`);
     const bf = _genericDbResult.bind(this, resp);
     const limit = parseInt(req.query.limit, 10)
-    dbClient.getUserLikes(req.params.userId, limit).then(bf).catch(bf);
+    const quoteIds = req.query.quotes;
+    //console.log(`[/api/users/${req.params.userId}/likes] limit: ${limit}, quoteIds: ${quoteIds}`);
+    if(!isNaN(limit))
+        dbClient.getUserLikes(req.params.userId, limit).then(bf).catch(bf);
+    else
+        dbClient.findUserLikes(req.params.userId, quoteIds).then(bf).catch(bf);
 });
 
 app.route('/api/authors/:authorId?')

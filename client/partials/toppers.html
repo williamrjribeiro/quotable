@@ -14,7 +14,7 @@
 <ol ng-if="!loadingC">
     <li ng-repeat="quote in unsourcedQuotes">
         <h3>"{{quote.text}}"</h3>
-        <h4>by <a href ng-click="BaseState.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from  - Unknown Source! <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h4>
+        <h4>by <a href ng-click="BaseState.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from  - Unknown Source! <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h4>
     </li>
 </ol>
 

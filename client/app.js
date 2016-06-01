@@ -87,6 +87,10 @@ angular.module('quotable', ['ui.router'] )
         toggleLike(quoteId:string, userId:string, isLike:boolean) : Object {
             console.log("[ApiService.toggleLike] quoteId:",quoteId,", userId:", userId);
             return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId, isLike: isLike});
+        },
+        findUserLikes(userId:string, quoteIds) : Object {
+            console.log("[ApiService.findUserLikes] userId:",userId,", quoteIds.length:", quoteIds.length);
+            return $http.get(`/api/users/${userId}/likes?quotes=${quoteIds}`);
         }
     };
 }])
@@ -146,12 +150,16 @@ angular.module('quotable', ['ui.router'] )
             $scope.loadingC = true;
             $scope.loadingD = true;
 
+            function _doneLoading(loading:string, collection:string, data){
+                $scope[loading] = false;
+                $scope[collection] = data;
+            }
+
             ApiService.mostLiked("authors").then((resp) => {
                 resp.data.map((item) => {
                     item.name = Utils.camelCase(item._id);
                 });
-                $scope.loadingA = false;
-                $scope.knownAuthors = resp.data;
+                _doneLoading("loadingA","knownAuthors", resp.data);
             });
 
             ApiService.mostLiked("sources").then((resp) => {
@@ -163,11 +171,31 @@ angular.module('quotable', ['ui.router'] )
             });
 
             ApiService.mostLiked("unsourced").then((resp) => {
-                resp.data.map((item) => {
+                let qids = [];
+                let quotes = resp.data;
+                quotes.map((item) => {
                     item.author_name = Utils.camelCase(item.author_id);
+                    item.hasLiked = false;
+                    qids.push(item._id);
                 });
-                $scope.loadingC = false;
-                $scope.unsourcedQuotes = resp.data;
+                // TODO: Refactor this to be more reusable and use it everywhere.
+                if($rootScope.userCredentials){
+                    ApiService.findUserLikes($rootScope.userCredentials._id, qids).then((resp2) => {
+                        const foundLikes = resp2.data;
+                        quotes.map((it) => {
+                            for(let i = foundLikes.length - 1; i >= 0; i--){
+                                if(it._id === foundLikes[i].quote_id){
+                                    it.hasLiked = true;
+                                    break;
+                                }
+                            }
+                        });
+                        _doneLoading("loadingC","unsourcedQuotes", quotes);
+                    });
+                }
+                else{
+                    _doneLoading("loadingC","unsourcedQuotes", quotes);
+                }
             });
 
             ApiService.mostLiked().then((resp) => {
@@ -338,31 +366,31 @@ angular.module('quotable', ['ui.router'] )
     templateUrl: 'partials/likes.html',
     bindings: {
         val: '<',
-        quoteId: '<'
+        quoteId: '<',
+        hasLiked: '<'
     },
     controller: function LikesController($scope, $rootScope, ApiService){
         var ctrl = this;
         ctrl.signedIn = $rootScope.userCredentials ? true : false;
         ctrl.likeLabel = updateLabel(ctrl.val);
-        ctrl.isLiked = isLiked(ctrl.val, ctrl.quoteId);
-        ctrl.likeToggle = ctrl.isLiked ? "Unlike" : "Like";
+        ctrl.likeToggle = ctrl.hasLiked ? "Unlike" : "Like";
 
         //console.log('[LikesController] ctrl:',ctrl);
 
         ctrl.toggleLike = () => {
-            console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id,", isLiked:", ctrl.isLiked);
+            console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id,", hasLiked:", ctrl.hasLiked);
             ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id, !ctrl.isLiked).then((resp) => {
                 console.log('[LikesController.toggleLike.then] resp:', resp);
-                if(ctrl.isLiked){
+                if(ctrl.hasLiked){
                     // Unlike it
-                    ctrl.isLiked = false;
+                    ctrl.hasLiked = false;
                     if(ctrl.val === 0)
                         ctrl.val--;
                     ctrl.likeToggle = "Like";
                 }
                 else {
                     // Like it
-                    ctrl.isLiked = true;
+                    ctrl.hasLiked = true;
                     ctrl.val++;
                     ctrl.likeToggle = "Unlike";
                 }
@@ -371,15 +399,6 @@ angular.module('quotable', ['ui.router'] )
         };
         function updateLabel(val:number) : string{
             return " like" + (val !== 1 ? "s":"");
-        }
-        function isLiked(val:number,id:string) : boolean {
-            if(val > 0){
-                if($rootScope.loadedQuotes){
-                    return $rootScope.loadedQuotes.has(id);
-                }
-            }
-            return false;
-            //return (val > 0 && $rootScope.loadedQuotes && $rootScope.loadedQuotes.indexOf(id) >= 0);
         }
     }
 });
