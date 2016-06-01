@@ -21,10 +21,10 @@
         <div>
             <i>{{contrib.kind}}</i>
             <i>{{contrib.col}}
-            <a href ng-click="BaseState.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
+            <a href ng-click="BaseStateCtrl.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
             on <i>{{contrib.submitted}}</i>.
             Approved by
-            <i ng-if="(contrib.col === 'author')"><a href ng-click="BaseState.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
+            <i ng-if="(contrib.col === 'author')"><a href ng-click="BaseStateCtrl.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
             on <i>{{contrib.approved.date}}</i>.
         </div>
     </li>

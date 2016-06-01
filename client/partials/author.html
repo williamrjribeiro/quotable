@@ -8,7 +8,7 @@
 <ul>
     <li ng-repeat="source in author.sources">
         <div>
-            <h2><a href="javascript:void(0)" ng-click="onSourceClick(source._id)">{{source.title}}</a></h2>
+            <h2><a href ng-click="onSourceClick(source._id)">{{source.title}}</a></h2>
             <div>
                 The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}
             </div>
@@ -21,7 +21,7 @@
 <ol ng-if="!loadingQuotes">
     <li ng-repeat="quote in unsourcedQuotes">
         <div>
-            <h2><a href="javascript:void(0)" ng-click="onQuoteClick(quote._id)">{{quote.text}}</a> - <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h2>
+            <h2><a href ng-click="onQuoteClick(quote._id)">{{quote.text}}</a> - <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h2>
         </div>
     </li>
 </ol>

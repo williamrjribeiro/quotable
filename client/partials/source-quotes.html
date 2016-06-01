@@ -1,6 +1,6 @@
 <h1>{{source.title}}</h1>
 <h3>
-    by <a href="javascript:void(0)" ng-click="BaseState.toAuthorState(author._id)">{{author.name}}</a>
+    by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a>
 </h3>
 <div>
     The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}
@@ -8,6 +8,6 @@
 <h5 ng-if="loading">loading...</h5>
 <ol ng-if="!loading">
     <li ng-repeat="quote in quotes">
-        <h3>"{{quote.text}}" - <qtb-likes val="quote.likes" quote-id="quote._id"></qtb-likes></h3>
+        <h3>"{{quote.text}}" - <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h3>
     </li>
 </ol>

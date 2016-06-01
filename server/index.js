@@ -233,17 +233,17 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        toggleLike(quoteId:string, userId:string, isLike:boolean) : Object {
-            console.log("[dbClient.toggleLike] quoteId:",quoteId,", userId:",userId, ", isLike:",isLike);
+        toggleLike(quoteId:string, userId:string, action:string) : Object {
+            console.log("[dbClient.toggleLike] quoteId:",quoteId,", userId:",userId, ", action:",action);
             const deferred = Q.defer();
-            if(isLike){
+            if(action === "like"){
                 this.addLike(quoteId, userId).then((added)=>{
                     this.incrementQuoteLikeCount(quoteId).then((incremented) => {
                         deferred.resolve({added:added, incremented:incremented});
                     });
                 });
             }
-            else{
+            else if (action === "unlike"){
                 this.deleteLike(quoteId, userId).then((deleted)=>{
                     this.decrementQuoteLikeCount(quoteId).then((decremented) => {
                         deferred.resolve({deleted:deleted, decremented:decremented});
@@ -443,9 +443,9 @@ app.post('/api/quotes/:quoteId/like', jsonParser, (req, resp) => {
     if(!req.body) return resp.sendStatus(400);
     const quoteId = req.params.quoteId;
     const userId = req.body.userId;
-    const isLike = req.body.isLike;
+    const action = req.body.action;
 
-    dbClient.toggleLike(quoteId, userId, isLike).then((result) => {
+    dbClient.toggleLike(quoteId, userId, action).then((result) => {
         console.log(`[/api/quotes/${quoteId}/like/toggleLike.then] result:`, result);
         resp.status(200).json(result);
     }).catch((error) => {

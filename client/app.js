@@ -84,45 +84,64 @@ angular.module('quotable', ['ui.router'] )
             console.log("[ApiService.verifyCredentials] credentials.id:",credentials.id);
             return $http.post(`/api/verifyCredentials`, credentials);
         },
-        toggleLike(quoteId:string, userId:string, isLike:boolean) : Object {
-            console.log("[ApiService.toggleLike] quoteId:",quoteId,", userId:", userId);
-            return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId, isLike: isLike});
+        toggleLike(quoteId:string, userId:string, action:string) : Object {
+            console.log("[ApiService.toggleLike] quoteId:",quoteId,", userId:", userId,", action:", action);
+            return $http.post(`/api/quotes/${quoteId}/like`, {userId: userId, action: action});
         },
-        findUserLikes(userId:string, quoteIds) : Object {
-            console.log("[ApiService.findUserLikes] userId:",userId,", quoteIds.length:", quoteIds.length);
-            return $http.get(`/api/users/${userId}/likes?quotes=${quoteIds}`);
+        findUserLikes(userId:string, quotes) : Object {
+            console.log("[ApiService.findUserLikes] userId:",userId,", quotes.length:", quotes.length);
+            let deferred = $q.defer();
+            let quoteIds = [];
+            quotes.map((item) => {
+                item.hasLiked = false;
+                quoteIds.push(item._id);
+            });
+            $http.get(`/api/users/${userId}/likes?quotes=${quoteIds}`).then((resp) => {
+                const foundLikes = resp.data;
+                // Testing reverse loop instead of Array.find()
+                quotes.map((it) => {
+                    for(let i = foundLikes.length - 1; i >= 0; i--){
+                        if(it._id === foundLikes[i].quote_id){
+                            it.hasLiked = true;
+                            break;
+                        }
+                    }
+                });
+                deferred.resolve(quotes);
+            });
+            return deferred.promise;
         }
     };
 }])
-.factory('BaseState', ['$state','$rootScope', function BaseStateFactory($state, $rootScope){
+.factory('BaseStateCtrl', ['$state','$q','$rootScope', function BaseStateCtrlFactory($state, $q, $rootScope){
     $rootScope.loadedQuotes = new Set();
     $rootScope.$on('$stateChangeStart',
     function(event, toState, toParams, fromState, fromParams){
-        console.warn("[BaseState.stateChangeStart] toState: "+toState.name+", loadedQuotes.length: "+$rootScope.loadedQuotes.length);
+        console.warn("[BaseStateCtrl.stateChangeStart] toState: "+toState.name+", loadedQuotes.length: "+$rootScope.loadedQuotes.length);
         $rootScope.loadedQuotes = new Set();
     });
     return {
         signOut() : void {
-            console.log("[BaseState.signOut] userCredentials:", $rootScope.userCredentials);
+            console.log("[BaseStateCtrl.signOut] userCredentials:", $rootScope.userCredentials);
             $rootScope.userCredentials = null;
             $state.go("toppers");
         },
         toAuthorState(id: string): void{
-            console.log("[BaseState.toAuthorState] id:", id);
+            console.log("[BaseStateCtrl.toAuthorState] id:", id);
             $state.go('author', {authorId: id});
         },toSourceState(authorId: string, sourceId: string): void{
-            console.log("[BaseState.toSourceState] authorId:",authorId, ",sourceId", sourceId);
+            console.log("[BaseStateCtrl.toSourceState] authorId:",authorId, ",sourceId", sourceId);
             $state.go('source', {authorId: authorId, sourceId: sourceId});
         },toQuotesState(id: string): void{
-            console.log("[BaseState.toQuotesState] id:", id);
+            console.log("[BaseStateCtrl.toQuotesState] id:", id);
             $state.go('author.source.quotes', {sourceId: id});
         },
         toProfileState(id: string): void{
-            console.log("[BaseState.toProfileState] id:", id);
+            console.log("[BaseStateCtrl.toProfileState] id:", id);
             $state.go('profile', {userId: id});
         },
         displayLang(lang: string): string {
-            console.log("[BaseState.displayLang] lang:", lang);
+            console.log("[BaseStateCtrl.displayLang] lang:", lang);
             switch(lang){
                 case "eng": return "English";
                 default: return lang;
@@ -141,10 +160,10 @@ angular.module('quotable', ['ui.router'] )
     $stateProvider.state('toppers',{
         url: '/toppers',
         templateUrl: './partials/toppers.html',
-        controller: ($rootScope, $scope, $state, ApiService, BaseState) => {
+        controller: ($rootScope, $scope, $state, ApiService, BaseStateCtrl) => {
             console.log("[toppers.controller]");
 
-            $scope.BaseState = BaseState;
+            $scope.BaseStateCtrl = BaseStateCtrl;
             $scope.loadingA = true;
             $scope.loadingB = true;
             $scope.loadingC = true;
@@ -171,36 +190,26 @@ angular.module('quotable', ['ui.router'] )
             });
 
             ApiService.mostLiked("unsourced").then((resp) => {
-                let qids = [];
                 let quotes = resp.data;
-                quotes.map((item) => {
-                    item.author_name = Utils.camelCase(item.author_id);
-                    item.hasLiked = false;
-                    qids.push(item._id);
-                });
                 // TODO: Refactor this to be more reusable and use it everywhere.
                 if($rootScope.userCredentials){
-                    ApiService.findUserLikes($rootScope.userCredentials._id, qids).then((resp2) => {
-                        const foundLikes = resp2.data;
-                        quotes.map((it) => {
-                            for(let i = foundLikes.length - 1; i >= 0; i--){
-                                if(it._id === foundLikes[i].quote_id){
-                                    it.hasLiked = true;
-                                    break;
-                                }
-                            }
-                        });
+                    ApiService.findUserLikes($rootScope.userCredentials._id, quotes).then((foundLikes) => {
                         _doneLoading("loadingC","unsourcedQuotes", quotes);
-                    });
+                    })
                 }
-                else{
+                else
                     _doneLoading("loadingC","unsourcedQuotes", quotes);
-                }
             });
 
             ApiService.mostLiked().then((resp) => {
-                $scope.loadingD = false;
-                $scope.mysteriousQuotes = resp.data;
+                let quotes = resp.data;
+                if($rootScope.userCredentials){
+                    ApiService.findUserLikes($rootScope.userCredentials._id, quotes).then((foundLikes) => {
+                        _doneLoading("loadingD","mysteriousQuotes", quotes);
+                    })
+                }
+                else
+                    _doneLoading("loadingD","mysteriousQuotes", quotes);
             });
         }
     })
@@ -245,9 +254,9 @@ angular.module('quotable', ['ui.router'] )
     .state("profile", {
         url:"/users/:userId",
         templateUrl: "./partials/profile.html",
-        controller: ($rootScope, $stateParams, $scope, $state, ApiService, BaseState) => {
+        controller: ($rootScope, $stateParams, $scope, $state, ApiService, BaseStateCtrl) => {
             console.log("[ProfileCtrl] userId:", $stateParams.userId);
-            $scope.BaseState = BaseState;
+            $scope.BaseStateCtrl = BaseStateCtrl;
 
             const userId = $stateParams.userId;
             if(_selectedUser && _selectedUser._id === userId)
@@ -285,33 +294,39 @@ angular.module('quotable', ['ui.router'] )
     .state('author',{
         url: '/:authorId',
         templateUrl: './partials/author.html',
-        controller: ($stateParams, $rootScope, $scope, ApiService, BaseState) => {
+        controller: ($stateParams, $rootScope, $scope, ApiService, BaseStateCtrl) => {
             console.log("[authorCtrl] authorId:", $stateParams.authorId);
             const authorId = $stateParams.authorId;
-            $scope.BaseState = BaseState;
+            $scope.BaseStateCtrl = BaseStateCtrl;
             $scope.loadingQuotes = true;
             $scope.onSourceClick = (sourceId) => {
                 console.log("[authorCtrl.onSourceClick] sourceId:",sourceId);
                 _selectedSource = $scope.author.sources.find((s) => {return s._id === sourceId});
                 console.log("[authorCtrl.onSourceClick] _selectedSource:", _selectedSource);
-                BaseState.toSourceState(authorId, sourceId);
+                BaseStateCtrl.toSourceState(authorId, sourceId);
             };
 
             ApiService.getAuthor(authorId).then((resp) => {
                 console.log("[authorCtrl.getAuthor] resp:",resp);
                 resp.data.sources.map((item) => {
-                    item.disp_lang = BaseState.displayLang(item.original_lang);
+                    item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
                 });
                 $scope.author = resp.data;
                 _selectedAuthor = resp.data;
             });
 
             ApiService.getQuotesByAuthor(authorId).then((resp) => {
-                resp.data.map((item) => {
-                    item.author_name = Utils.camelCase(item.author_id);
-                });
-                $scope.unsourcedQuotes = resp.data;
-                $scope.loadingQuotes = false;
+                let quotes = resp.data;
+                if($rootScope.userCredentials){
+                    ApiService.findUserLikes($rootScope.userCredentials._id, quotes).then((foundLikes) => {
+                        $scope.unsourcedQuotes = resp.data;
+                        $scope.loadingQuotes = false;
+                    })
+                }
+                else{
+                    $scope.unsourcedQuotes = resp.data;
+                    $scope.loadingQuotes = false;
+                }
             });
         },
         controllerAs: 'authorCtrl'
@@ -319,12 +334,12 @@ angular.module('quotable', ['ui.router'] )
     .state('source',{
         url: '/:authorId/:sourceId',
         templateUrl: './partials/source-quotes.html',
-        controller: ($stateParams, $rootScope, $scope, ApiService, BaseState) => {
+        controller: ($stateParams, $rootScope, $scope, ApiService, BaseStateCtrl) => {
             console.log("[sourceCtrl] _selectedAuthor:", _selectedAuthor,", _selectedSource:", _selectedSource);
             const sourceId = $stateParams.sourceId;
             const authorId = $stateParams.authorId;
 
-            $scope.BaseState = BaseState;
+            $scope.BaseStateCtrl = BaseStateCtrl;
             $scope.loading = true;
             $scope.quotes = null;
             $scope.author = _selectedAuthor || null;
@@ -333,7 +348,7 @@ angular.module('quotable', ['ui.router'] )
             if(!$scope.author || $scope.author.id !== authorId){
                 ApiService.getAuthor(authorId).then((resp) => {
                     resp.data.sources.map((item) => {
-                        item.disp_lang = BaseState.displayLang(item.original_lang);
+                        item.disp_lang = BaseStateCtrl.displayLang(item.original_lang);
                     });
                     $scope.author = resp.data;
                     $scope.source = $scope.author.sources.find((s) => {return s._id === sourceId});
@@ -342,8 +357,17 @@ angular.module('quotable', ['ui.router'] )
                 });
             }
             ApiService.getQuotesBySource(sourceId).then((resp) => {
-                $scope.quotes = resp.data;
-                $scope.loading = false;
+                let quotes = resp.data;
+                if($rootScope.userCredentials){
+                    ApiService.findUserLikes($rootScope.userCredentials._id, quotes).then((foundLikes) => {
+                        $scope.quotes = resp.data;
+                        $scope.loading = false;
+                    })
+                }
+                else{
+                    $scope.quotes = resp.data;
+                    $scope.loading = false;
+                }
             });
         },
         controllerAs: 'sourceCtrl'
@@ -379,10 +403,10 @@ angular.module('quotable', ['ui.router'] )
 
         ctrl.toggleLike = () => {
             console.log('[LikesController.toggleLike] quote_id:', ctrl.quote_id,", hasLiked:", ctrl.hasLiked);
-            ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id, !ctrl.isLiked).then((resp) => {
+            const action = ctrl.hasLiked ? "unlike" : "like";
+            ApiService.toggleLike(ctrl.quoteId, $rootScope.userCredentials._id, action).then((resp) => {
                 console.log('[LikesController.toggleLike.then] resp:', resp);
-                if(ctrl.hasLiked){
-                    // Unlike it
+                if(!ctrl.hasLiked){
                     ctrl.hasLiked = false;
                     if(ctrl.val === 0)
                         ctrl.val--;
@@ -397,6 +421,7 @@ angular.module('quotable', ['ui.router'] )
                 ctrl.label = updateLabel(ctrl.val);
             });
         };
+
         function updateLabel(val:number) : string{
             return " like" + (val !== 1 ? "s":"");
         }
