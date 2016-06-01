@@ -57,7 +57,8 @@ const dbClient = function(){
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
                 _db.collection('quotes').aggregate([
-                    {"$group":{"_id":"$author_id","total_likes":{"$sum":"$likes"}}}
+                    {"$match": {"author_id": {"$ne": null}}}
+                    ,{"$group":{"_id":"$author_id","total_likes":{"$sum":"$likes"}}}
                     ,{"$limit":limit}
                     ,{"$sort":{"total_likes":-1}}
                 ]).toArray(_resolver.bind(this, deferred));
