@@ -1,39 +1,61 @@
-<h1>Top 3 Mysterious Quotes of all time</h1>
-<h5 ng-if="loadingD">loading...</h5>
-<ol ng-if="!loadingD">
-    <li ng-repeat="quote in mysteriousQuotes">
-        <h3>"{{quote.text}}"</h3>
-        <h4>by Unknown Author! from Unknown Source! - <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h4>
-    </li>
-</ol>
+<div class="row">
+    <div class="container col-md-6">
+        <h2>Top 3 Mysterious Quotes of all time</h2>
+        <hr>
+        <h5 ng-if="loadingD">loading...</h5>
+        <ol ng-if="!loadingD" class="topList">
+            <li ng-repeat="quote in mysteriousQuotes">
+                <h3>"{{quote.text}}"</h3>
+                <h4>by Unknown Author! from Unknown Source!&nbsp;&ndash;&nbsp;
+                    <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+                </h4>
+            </li>
+        </ol>
+    </div>
+    <div class="container col-md-6">
+        <h2>Top 3 Unsourced Quotes of all time</h2>
+        <hr>
+        <h5 ng-if="loadingC">loading...</h5>
+        <ol ng-if="!loadingC" class="topList">
+            <li ng-repeat="quote in unsourcedQuotes">
+                <h3>"{{quote.text}}"</h3>
+                <h4>by
+                    <a href ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_name}}</a>
+                    from&nbsp;&ndash;&nbsp;Unknown Source!
+                    <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+                </h4>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="container col-md-6">
+        <h2>Top 3 Most Liked Sources of all time</h2>
+        <hr>
+        <h5 ng-if="loadingB">loading...</h5>
+        <ol ng-if="!loadingB" class="topList">
+            <li ng-repeat="source in knownSources">
+                <h3>
+                    <a href ng-click="BaseStateCtrl.toSourceState(source.author_id[0], source._id)">{{source.title}}</a>
+                    &nbsp;&ndash;&nbsp;
+                    <qtb-likes val="source.total_likes" quote-id=""></qtb-likes>
+                </h3>
+            </li>
+        </ol>
+    </div>
 
-<br />
-
-<h1>Top 3 Unsourced Quotes of all time</h1>
-<h5 ng-if="loadingC">loading...</h5>
-<ol ng-if="!loadingC">
-    <li ng-repeat="quote in unsourcedQuotes">
-        <h3>"{{quote.text}}"</h3>
-        <h4>by <a href ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from  - Unknown Source! <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h4>
-    </li>
-</ol>
-
-<br />
-
-<h1>Top 3 Most Liked Sources of all time</h1>
-<h5 ng-if="loadingB">loading...</h5>
-<ol ng-if="!loadingB">
-    <li ng-repeat="source in knownSources">
-        <h3><a href ng-click="BaseStateCtrl.toSourceState(source.author_id[0], source._id)">{{source.title}}</a> - <qtb-likes val="source.total_likes" quote-id=""></qtb-likes></h3>
-    </li>
-</ol>
-
-<br />
-
-<h1>Top 3 Most Liked Authors of all time</h1>
-<h5 ng-if="loadingA">loading...</h5>
-<ol ng-if="!loadingA">
-    <li ng-repeat="author in knownAuthors">
-        <h3><a href ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a> - <qtb-likes val="author.total_likes" quote-id=""></qtb-likes></h3>
-    </li>
-</ol>
+    <div class="container col-md-6">
+        <h2>Top 3 Most Liked Authors of all time</h2>
+        <hr>
+        <h5 ng-if="loadingA">loading...</h5>
+        <ol ng-if="!loadingA" class="topList">
+            <li ng-repeat="author in knownAuthors">
+                <h3>
+                    <a href ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a>
+                    &nbsp;&ndash;&nbsp;
+                    <qtb-likes val="author.total_likes" quote-id=""></qtb-likes>
+                </h3>
+            </li>
+        </ol>
+    </div>
+</div>

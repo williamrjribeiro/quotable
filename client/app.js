@@ -398,7 +398,8 @@ angular.module('quotable', ['ui.router'] )
 }])
 .directive('qtbAccessView', () => {
   return {
-    templateUrl: 'partials/acess-view.html'
+    templateUrl: 'partials/acess-view.html',
+    replace: true
   };
 })
 .component('qtbLikes', {

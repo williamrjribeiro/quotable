@@ -25,11 +25,12 @@ const PATHS = {
     js:     '/**/*.js',
     json:   '/**/*.json',
     html:   '/**/*.html',
+    css:    '/**/*.css',
     all:    '/**/*.*'
 };
 
 gulp.task('default', done => {
-    run('clean',['build-server','transpile'],'copy-client','watch', done);
+    run('clean',['build-server','transpile'],['copy-client','copy-bootstrap'],'watch', done);
 });
 
 gulp.task('build-server', done => {
@@ -50,7 +51,12 @@ gulp.task('transpile', () => {
 
 gulp.task('copy-client', () => {
     gulp.src(PATHS.client.src + PATHS.html).pipe(gulp.dest(PATHS.client.dist));
-    gulp.src(PATHS.client.src + PATHS.json).pipe(gulp.dest(PATHS.client.dist));
+    gulp.src(PATHS.client.src + PATHS.css).pipe(gulp.dest(PATHS.client.dist));
+    //gulp.src(PATHS.client.src + PATHS.json).pipe(gulp.dest(PATHS.client.dist));
+});
+
+gulp.task('copy-bootstrap', () => {
+    gulp.src("node_modules/bootstrap/dist/**/*").pipe(gulp.dest(PATHS.client.dist+"/bootstrap"));
 });
 
 gulp.task('clean', done => {
@@ -101,14 +107,16 @@ gulp.task('watch', () => {
         console.log("[gulp.watch] SERVER files changed! building server...");
         gulp.start('build-server');
     });
-    watch(PATHS.client.src + PATHS.js, (file) => {
+    watch(PATHS.client.src + PATHS.all, (file) => {
         console.log("[gulp.watch] CLIENT JS file changed! transpiling..., file:",file.relative);
         run('transpile');
     });
-    watch(PATHS.client.src + PATHS.html, (file) => {
-        console.log("[gulp.watch] CLIENT HTML file changed! copying..., file:",file.relative);
-        run('copy-client');
-    });
+    function copyClientStaticFiles(file) {
+        console.log("[gulp.watch] CLIENT STATIC file changed! copying..., file:",file.relative);
+        run(['copy-client','copy-bootstrap']);
+    }
+    watch(PATHS.client.src + PATHS.html, copyClientStaticFiles);
+    watch(PATHS.client.src + PATHS.css, copyClientStaticFiles);
     watch(PATHS.crossenv.src + PATHS.js, (file) => {
         console.log("[gulp.watch] CROSSENV JS file changed! transpiling..., file:",file.relative);
         run('transpile');

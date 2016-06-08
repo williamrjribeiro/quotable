@@ -1,8 +1,11 @@
-<div ng-controller="AccessViewController">
-    <div ng-hide="('/signup' | isState) || ('/signin' | isState) || (userCredentials)">
-        <a ui-sref="/signup">Signup now!</a> or <a ui-sref="/signin">Sign in</a>
-    </div>
-    <div ng-show="(userCredentials)">
+<ul ng-controller="AccessViewController" class="nav navbar-nav navbar-right">
+    <li ng-hide="('/signup' | isState) || ('/signin' | isState) || (userCredentials)">
+        <a ui-sref="/signup">Signup now!</a>
+    </li>
+    <li ng-hide="('/signup' | isState) || ('/signin' | isState) || (userCredentials)">
+        <a ui-sref="/signin">Sign in</a>
+    </li>
+    <li ng-show="(userCredentials)">
         <a ng-click="signOut()" href="javascript:void(0)" >Logout</a>
-    </div>
-</div>
+    </li>
+</ul>
