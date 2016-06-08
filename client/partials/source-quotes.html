@@ -1,14 +1,26 @@
-<h1>{{source.title}}</h1>
-<h3>
-    by <a href="javascript:void(0)" ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a>
-</h3>
-<div>
-    The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}} <br />
-    <b>Total likes:</b> {{source.totalLikes}}
+<div class="row">
+    <h1>{{source.title}}</h1>
+    <h3>
+        by
+        <a href ng-click="BaseStateCtrl.toAuthorState(author._id)">{{author.name}}</a>
+    </h3>
+    <div>
+        The
+        {{source.type}}
+        was released in
+        {{source.publish_date}}
+        and its main language is
+        {{source.disp_lang}}
+        <br/>
+        <b>Total likes:</b>
+        {{source.totalLikes}}
+    </div>
 </div>
 <h5 ng-if="loading">loading...</h5>
 <ol ng-if="!loading">
     <li ng-repeat="quote in quotes">
-        <h3>"{{quote.text}}" - <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h3>
+        <h3>"{{quote.text}}" -
+            <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+        </h3>
     </li>
 </ol>
