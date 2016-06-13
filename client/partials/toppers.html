@@ -6,10 +6,12 @@
             <h5 ng-if="loadingD">loading...</h5>
             <ol ng-if="!loadingD" class="topList">
                 <li ng-repeat="quote in mysteriousQuotes">
-                    <h3>"{{quote.text}}"</h3>
-                    <h4>by Unknown Author! from Unknown Source!&nbsp;&ndash;&nbsp;
-                        <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
-                    </h4>
+                    <blockquote class="blockquote">
+                        <p>{{quote.text}}</p>
+                        <footer>
+                            by Unknown Author from Unknown Source&nbsp;&ndash;&nbsp;<qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+                        </footer>
+                    </blockquote>
                 </li>
             </ol>
         </div>
@@ -19,12 +21,12 @@
             <h5 ng-if="loadingC">loading...</h5>
             <ol ng-if="!loadingC" class="topList">
                 <li ng-repeat="quote in unsourcedQuotes">
-                    <h3>"{{quote.text}}"</h3>
-                    <h4>by
-                        <a href ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_name}}</a>
-                        from&nbsp;&ndash;&nbsp;Unknown Source!
-                        <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
-                    </h4>
+                    <blockquote class="blockquote">
+                        <p>{{quote.text}}</p>
+                        <footer>
+                            by <a href ng-click="BaseStateCtrl.toAuthorState(quote.author_id)">{{quote.author_name}}</a> from Unknown Source&nbsp;&ndash;&nbsp;<qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+                        </footer>
+                    </blockquote>
                 </li>
             </ol>
         </div>

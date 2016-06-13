@@ -3,14 +3,14 @@
         <div class="col-md-12">
             <h1>{{author.name}}</h1>
             <h3>
-                {{author.nationality}}{{author.type}}
+                {{author.nationality}}&nbsp;{{author.type}}
             </h3>
-            <b>Born:</b>
+            <b>Born:&nbsp;</b>
             {{author.born}}
-            <b ng-if="author.death">Death:</b>
+            <b ng-if="author.death">&nbsp;Death:&nbsp;</b>
             {{author.death}}
             <br/>
-            <b>Total likes:</b>
+            <b>Total likes:&nbsp;</b>
             {{author.totalLikes}}
         </div>
     </div>

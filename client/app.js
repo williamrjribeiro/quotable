@@ -195,6 +195,9 @@ angular.module('quotable', ['ui.router'] )
 
             ApiService.mostLiked("unsourced").then((resp) => {
                 let quotes = resp.data;
+                quotes.map((item) => {
+                    item.author_name = Utils.camelCase(item.author_id);
+                });
                 // TODO: Refactor this to be more reusable and use it everywhere.
                 if($rootScope.userCredentials){
                     ApiService.findUserLikes($rootScope.userCredentials._id, quotes).then((foundLikes) => {
