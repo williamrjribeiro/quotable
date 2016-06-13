@@ -1,6 +1,6 @@
-<div class="row">
-    <div class="container well col-md-6 center-block">
-        <form name="Signin" ng-submit="verifyCredentials(credentials)">
+<div class="container">
+        <h1>Sign in</h1>
+        <form name="Signin" ng-submit="verifyCredentials(credentials)" class="form-signin">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input name=username type=text class="form-control" required ng-model="credentials.id">
@@ -12,5 +12,4 @@
 
             <button type="submit" name="submit" class="btn btn-success">Let me in!</button>
         </form>
-    </div>
 </div>

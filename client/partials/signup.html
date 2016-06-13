@@ -1,8 +1,12 @@
-<div class="row">
-    <div class="container well col-md-6 center-block">
-        <form name="Signup" ng-submit="addUser(user)">
-            <h3>Signup now and join the sources hunt!</h3>
-            <h4>Together will get rid of all unsourced mysterious quotes of the Web.</h4>
+<div class="container">
+    <div class="row">
+        <div class="well">
+            <h1>Signup now and join the sources hunt!</h1>
+            <h3>Together we'll get rid of all unsourced mysterious quotes of the Web.</h3>
+        </div>
+    </div>
+    <div class="row">
+        <form name="Signup" ng-submit="addUser(user)" class="form-signup">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input name=username type=text class="form-control" required ng-model="user.id">

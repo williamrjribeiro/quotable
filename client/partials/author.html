@@ -1,35 +1,55 @@
-<div class="col-md-10">
+<div class="container">
     <div class="row">
-        <h1>{{author.name}}</h1>
-        <h3>{{author.nationality}} {{author.type}}</h3>
-        <div>
-            <b>Born:</b> {{author.born}}
-            <b ng-if="author.death">Death:</b> {{author.death}} <br />
-            <b>Total likes:</b> {{author.totalLikes}}
+        <div class="col-md-12">
+            <h1>{{author.name}}</h1>
+            <h3>
+                {{author.nationality}}{{author.type}}
+            </h3>
+            <b>Born:</b>
+            {{author.born}}
+            <b ng-if="author.death">Death:</b>
+            {{author.death}}
+            <br/>
+            <b>Total likes:</b>
+            {{author.totalLikes}}
         </div>
     </div>
     <div class="row" ng-show="author.sources.length > 0">
-        <h2>Sources:</h2>
-        <ul>
-            <li ng-repeat="source in author.sources">
-                <div>
-                    <h2><a href ng-click="onSourceClick(source._id)">{{source.title}}</a></h2>
+        <div class="col-md-12">
+            <h2>Sources:</h2>
+            <ul>
+                <li ng-repeat="source in author.sources">
                     <div>
-                        The {{source.type}} was released in {{source.publish_date}} and its main language is {{source.disp_lang}}
+                        <h2>
+                            <a href ng-click="onSourceClick(source._id)">{{source.title}}</a>
+                        </h2>
+                        <div>
+                            The
+                            {{source.type}}
+                            was released in
+                            {{source.publish_date}}
+                            and its main language is
+                            {{source.disp_lang}}
+                        </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+        </div>
     </div>
     <div class="row" ng-show="unsourcedQuotes.length > 0">
-        <h2>Unsourced Quotes:</h2>
-        <h5 ng-if="loadingQuotes">loading...</h5>
-        <ol ng-if="!loadingQuotes">
-            <li ng-repeat="quote in unsourcedQuotes">
-                <div>
-                    <h2><a href ng-click="onQuoteClick(quote._id)">{{quote.text}}</a> - <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes></h2>
-                </div>
-            </li>
-        </ol>
+        <div class="col-md-12">
+            <h2>Unsourced Quotes:</h2>
+            <h5 ng-if="loadingQuotes">loading...</h5>
+            <ul ng-if="!loadingQuotes">
+                <li ng-repeat="quote in unsourcedQuotes">
+                    <blockquote class="blockquote">
+                        <p>{{quote.text}}</p>
+                        <footer>
+                            <qtb-likes val="quote.likes" quote-id="quote._id" has-liked="quote.hasLiked"></qtb-likes>
+                        </footer>
+                    </blockquote>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

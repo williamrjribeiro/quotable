@@ -439,7 +439,7 @@ angular.module('quotable', ['ui.router'] )
         };
 
         function updateLabel(val:number) : string{
-            return " like" + (val !== 1 ? "s":"");
+            return "like" + (val !== 1 ? "s":"");
         }
     }
 });

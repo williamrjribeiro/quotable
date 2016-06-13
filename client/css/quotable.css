@@ -7,3 +7,15 @@ body {
 .topList {
     font-size: 1.6em;
 }
+
+ul {
+    list-style: none;
+}
+
+form.form-signin{
+    max-width: 400px;
+}
+
+form.form-signup{
+    max-width: 550px;
+}
