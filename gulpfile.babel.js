@@ -38,7 +38,7 @@ gulp.task('build-server', done => {
 });
 
 gulp.task('transpile', () => {
-    return browserify(PATHS.client.main)
+    return browserify([PATHS.client.main, PATHS.client.src+"/apiservice.js", PATHS.client.src+"/basestatectrl.js"])
         .transform("babelify")
         .bundle()
         .on("error", function (error) {
@@ -73,12 +73,12 @@ gulp.task('clean-client', done => {
 
 gulp.task('flow', shell.task([
     'flow'
-], {ignoreErrors: true}));
+], {ignoreErrors: false}));
 
 gulp.task('babel', shell.task([
     'babel server --out-dir dist'
     //`babel ${PATHS.server.src} --out-dir ${PATHS.server.dist}`
-], {ignoreErrors: true}));
+], {ignoreErrors: false}));
 
 let express;
 
