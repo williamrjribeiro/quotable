@@ -1,20 +1,20 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>{{user._id}}</h1>
-            <h3>A.K.A. {{user.name}}</h3>
+            <h1>{{ctrl.user._id}}</h1>
+            <h3>A.K.A. {{ctrl.user.name}}</h3>
             <div>
-                <b>Email:</b> {{user.email}}
-                <b>Role:</b> {{user.role}}
+                <b>Email:</b> {{ctrl.user.email}}
+                <b>Role:</b> {{ctrl.user.role}}
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <h2>Likes:</h2>
-            <h5 ng-if="loadingLikes">loading...</h5>
-            <ul ng-if="!loadingLikes">
-                <li ng-repeat="like in userLikes">
+            <h5 ng-if="ctrl.loadingLikes">loading...</h5>
+            <ul ng-if="!ctrl.loadingLikes">
+                <li ng-repeat="like in ctrl.userLikes">
                     <div>
                         Liked <i>{{like.quote_id}}</i> on <i>{{like.datetime}}</i>
                     </div>
@@ -25,16 +25,16 @@
     <div class="row">
         <div class="col-md-12">
             <h2>Contributions:</h2>
-            <h5 ng-if="loadingContribs">loading...</h5>
-            <ol ng-if="!loadingContribs">
-                <li ng-repeat="contrib in contributions">
+            <h5 ng-if="ctrl.loadingContribs">loading...</h5>
+            <ol ng-if="!ctrl.loadingContribs">
+                <li ng-repeat="contrib in ctrl.contributions">
                     <div>
                         <i>{{contrib.kind}}</i>
                         <i>{{contrib.col}}
-                        <a href ng-click="BaseStateCtrl.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
+                        <a href ng-click="ctrl._BaseStateCtrl.toAuthorState(contrib.ref_id)">{{contrib.ref_id}}</a></i>
                         on <i>{{contrib.submitted}}</i>.
                         Approved by
-                        <i ng-if="(contrib.col === 'author')"><a href ng-click="BaseStateCtrl.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
+                        <i ng-if="(contrib.col === 'author')"><a href ng-click="ctrl._BaseStateCtrl.toProfileState(contrib.approved.by)">{{contrib.approved.by}}</a></i>
                         on <i>{{contrib.approved.date}}</i>.
                     </div>
                 </li>

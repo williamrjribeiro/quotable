@@ -1,27 +1,27 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>{{author.name}}</h1>
+            <h1>{{ctrl.author.name}}</h1>
             <h3>
-                {{author.nationality}}&nbsp;{{author.type}}
+                {{ctrl.author.nationality}}&nbsp;{{ctrl.author.type}}
             </h3>
             <b>Born:&nbsp;</b>
-            {{author.born}}
-            <b ng-if="author.death">&nbsp;Death:&nbsp;</b>
-            {{author.death}}
+            {{ctrl.author.born}}
+            <b ng-if="ctrl.author.death">&nbsp;Death:&nbsp;</b>
+            {{ctrl.author.death}}
             <br/>
             <b>Total likes:&nbsp;</b>
-            {{author.totalLikes}}
+            {{ctrl.author.totalLikes}}
         </div>
     </div>
-    <div class="row" ng-show="author.sources.length > 0">
+    <div class="row" ng-show="ctrl.author.sources.length > 0">
         <div class="col-md-12">
             <h2>Sources:</h2>
             <ul>
-                <li ng-repeat="source in author.sources">
+                <li ng-repeat="source in ctrl.author.sources">
                     <div>
                         <h2>
-                            <a href ng-click="onSourceClick(source._id)">{{source.title}}</a>
+                            <a href ng-click="ctrl.onSourceClick(source._id)">{{source.title}}</a>
                         </h2>
                         <div>
                             The
@@ -36,12 +36,12 @@
             </ul>
         </div>
     </div>
-    <div class="row" ng-show="unsourcedQuotes.length > 0">
+    <div class="row" ng-show="ctrl.unsourcedQuotes.length > 0">
         <div class="col-md-12">
             <h2>Unsourced Quotes:</h2>
-            <h5 ng-if="loadingQuotes">loading...</h5>
-            <ul ng-if="!loadingQuotes">
-                <li ng-repeat="quote in unsourcedQuotes">
+            <h5 ng-if="ctrl.loadingQuotes">loading...</h5>
+            <ul ng-if="!ctrl.loadingQuotes">
+                <li ng-repeat="quote in ctrl.unsourcedQuotes">
                     <blockquote class="blockquote">
                         <p>{{quote.text}}</p>
                         <footer>

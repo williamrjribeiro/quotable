@@ -41,13 +41,22 @@
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
     "gulp": "^3.9.1",
+    "gulp-connect": "^4.1.0",
+    "gulp-jshint": "^2.0.1",
     "gulp-live-server": "0.0.29",
+    "gulp-load-plugins": "^1.2.4",
+    "gulp-ng-annotate": "^2.0.0",
     "gulp-shell": "^0.5.2",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.3",
     "gulp-watch": "^4.3.5",
     "jasmine-es6": "^0.1.10",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0",
+    "ng-annotate": "^1.2.1",
     "rimraf": "^2.5.2",
     "run-sequence": "^1.1.5",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
 }

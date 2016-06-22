@@ -1,5 +1,5 @@
 /* @flow */
-export var Utils = {
+var Utils = {
     camelCase(s: string): string {
         return (s||'').toLowerCase().replace(/(\b|_)\w/g, function(m) {
             return m.toUpperCase().replace(/_/,' ');
@@ -8,4 +8,5 @@ export var Utils = {
     sanitizeId(s:string): string {
         return (s||'').toLowerCase().replace(/ /g,"_");
     }
-}
+};
+ export default Utils;

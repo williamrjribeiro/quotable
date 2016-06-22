@@ -1,4 +1,4 @@
-<ul ng-controller="AccessViewController" class="nav navbar-nav navbar-right">
+<ul ng-controller="AccessViewCtrl as ctrl" class="nav navbar-nav navbar-right">
     <li ng-hide="('/signup' | isState) || ('/signin' | isState) || (userCredentials)">
         <a ui-sref="/signup">Signup now!</a>
     </li>
@@ -6,6 +6,6 @@
         <a ui-sref="/signin">Sign in</a>
     </li>
     <li ng-show="(userCredentials)">
-        <a ng-click="signOut()" href="javascript:void(0)" >Logout</a>
+        <a ng-click="ctrl.signOut()" href="javascript:void(0)" >Logout</a>
     </li>
 </ul>

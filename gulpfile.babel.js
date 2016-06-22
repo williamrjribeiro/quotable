@@ -6,7 +6,11 @@ import gls from 'gulp-live-server';
 import rimraf from 'rimraf';
 import run from 'run-sequence';
 import browserify from 'browserify';
-import source from "vinyl-source-stream";
+import vinylSourceStream from 'vinyl-source-stream';
+import vinylBuffer from 'vinyl-buffer';
+import loadPlugins from 'gulp-load-plugins';
+
+const plugins = loadPlugins();
 
 const PATHS = {
     server: {
@@ -34,19 +38,31 @@ gulp.task('default', done => {
 });
 
 gulp.task('build-server', done => {
-    run('flow', 'babel','start-server', done);
+    //run('flow', 'babel','start-server', done);
+    run('babel','start-server', done);
 });
 
 gulp.task('transpile', () => {
-    return browserify([PATHS.client.main, PATHS.client.src+"/apiservice.js", PATHS.client.src+"/basestatectrl.js"])
+    return browserify({
+            entries: PATHS.client.main,
+            debug: true
+        })
         .transform("babelify")
         .bundle()
+        .pipe(vinylSourceStream("bundle.js"))
+        .pipe(vinylBuffer())
+        .pipe(plugins.sourcemaps.init({
+			loadMaps: true // Load the sourcemaps browserify already generated
+		}))
+        .pipe(plugins.ngAnnotate())
+        .pipe(plugins.sourcemaps.write(PATHS.client.dist, {
+			includeContent: true
+		}))
+        .pipe(gulp.dest(PATHS.client.dist))
         .on("error", function (error) {
-            console.error( `\n[gulp.transpile] Error: ${error.message}\n`);
+            console.error( `\n[transpile.transpile] Error: ${error.message}\n`);
             this.emit("end");
-        })
-        .pipe(source("bundle.js"))
-        .pipe(gulp.dest(PATHS.client.dist));
+        });
 });
 
 gulp.task('copy-client', () => {
@@ -73,12 +89,12 @@ gulp.task('clean-client', done => {
 
 gulp.task('flow', shell.task([
     'flow'
-], {ignoreErrors: false}));
+], {ignoreErrors: true}));
 
 gulp.task('babel', shell.task([
     'babel server --out-dir dist'
     //`babel ${PATHS.server.src} --out-dir ${PATHS.server.dist}`
-], {ignoreErrors: false}));
+], {ignoreErrors: true}));
 
 let express;
 
