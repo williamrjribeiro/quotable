@@ -53,12 +53,12 @@ export default class AuthorCtrl {
         if(this._$rootScope.userCredentials)
             this._ApiService.findUserLikes(this._$rootScope.userCredentials._id, quotes).then(this._onUserLikes.bind(this));
         else
-            this._onUserLikes(resp);
+            this._onUserLikes(quotes);
     }
 
-    _onUserLikes(resp : Object) : void {
-        console.log("[AuthorCtrl._onUserLikes] data.length:",resp.data);
-        this.unsourcedQuotes = resp.data;
+    _onUserLikes(data : Array<Object>) : void {
+        console.log("[AuthorCtrl._onUserLikes] data.length:",data.length);
+        this.unsourcedQuotes = data;
         this.loadingQuotes = false;
     }
 }

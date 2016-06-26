@@ -54,7 +54,7 @@ gulp.task('transpile', () => {
 			loadMaps: true // Load the sourcemaps browserify already generated
 		}))
         .pipe(plugins.ngAnnotate())
-        .pipe(plugins.sourcemaps.write(PATHS.client.dist, {
+        .pipe(plugins.sourcemaps.write("./", {
 			includeContent: true
 		}))
         .pipe(gulp.dest(PATHS.client.dist))
@@ -93,7 +93,7 @@ gulp.task('flow', shell.task([
 gulp.task('babel', shell.task([
     'babel server --out-dir dist'
     //`babel ${PATHS.server.src} --out-dir ${PATHS.server.dist}`
-], {ignoreErrors: true}));
+    ], {ignoreErrors: true}));
 
 let express;
 
@@ -120,7 +120,7 @@ gulp.task('restart-server', () => {
 gulp.task('watch', () => {
     watch(PATHS.server.src + PATHS.js, () => {
         console.log("[gulp.watch] SERVER files changed! building server...");
-        gulp.start('build-server');
+        run('build-server','start-server');
     });
     watch(PATHS.client.src + PATHS.all, (file) => {
         console.log("[gulp.watch] CLIENT JS file changed! transpiling..., file:",file.relative);

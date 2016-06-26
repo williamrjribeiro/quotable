@@ -37,7 +37,7 @@ const dbClient = function() : Object {
 
     return {
         connect(dbName : string ) : void {
-            console.log("[dbClient.connect] dbName:", dbName);
+            console.log(`[dbClient.connect] dbName:${dbName}`);
             _client.connect(_dbUrl + dbName, (err, db) => {
                 if(err){
                     console.error("[dbClient.connect] Couldn't connect to MongoDB! err:", err);
@@ -46,7 +46,6 @@ const dbClient = function() : Object {
                 else{
                     _db = db;
                     _isConnected = true;
-                    console.log("[dbClient.connect] Connected to MongoDB");
                 }
             });
         },
@@ -57,8 +56,8 @@ const dbClient = function() : Object {
                 _db.collection('quotes').aggregate([
                     {"$match": {"author_id": {"$ne": null}}}
                     ,{"$group":{"_id":"$author_id","total_likes":{"$sum":"$likes"}}}
-                    ,{"$limit":limit}
                     ,{"$sort":{"total_likes":-1}}
+                    ,{"$limit":limit}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.SOURCES){
@@ -66,22 +65,22 @@ const dbClient = function() : Object {
                     {"$match": {"source_id": {"$ne": null}}}
                     ,{"$project" : { "author_id" : 1 , "source_id" : 1, "likes": 1 } }
                     ,{"$group":{"_id":"$source_id","author_id":{"$addToSet":"$author_id"},"total_likes":{"$sum":"$likes"}}}
-                    ,{"$limit": limit}
                     ,{"$sort":{"total_likes":-1}}
+                    ,{"$limit": limit}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.UNSOURCED){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": {"$ne": null}}}
-                    ,{"$limit": limit}
                     ,{"$sort": {"likes": -1}}
+                    ,{"$limit": limit}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             else if(target === C.MOST_LIKED.MYSTERIOUS){
                 _db.collection('quotes').aggregate([
                     {"$match": {"source_id": null, "author_id": null}}
-                    ,{"$limit": limit}
                     ,{"$sort": {"likes": -1}}
+                    ,{"$limit": limit}
                 ]).toArray(_resolver.bind(this, deferred));
             }
             return deferred.promise;
@@ -119,8 +118,8 @@ const dbClient = function() : Object {
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
                 {"$match": {"source_id": sourceId}}
-                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
+                ,{"$limit":limit}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
@@ -129,8 +128,8 @@ const dbClient = function() : Object {
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
                 {"$match": {"author_id": authorId, "source_id": null}}
-                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
+                ,{"$limit":limit}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
@@ -147,8 +146,8 @@ const dbClient = function() : Object {
             let deferred = Q.defer();
             _db.collection('contributions').aggregate([
                 {"$match": {"who": userId}}
-                ,{"$limit":limit}
                 ,{"$sort": {"likes": -1}}
+                ,{"$limit":limit}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
@@ -181,8 +180,8 @@ const dbClient = function() : Object {
             const deferred = Q.defer();
             _db.collection('likes').aggregate([
                 {"$match": {"user_id": userId}}
-                ,{"$limit":limit}
                 ,{"$sort": {"datetime": -1}}
+                ,{"$limit":limit}
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
