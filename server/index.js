@@ -6,7 +6,6 @@ import mongo from 'mongodb';
 import Q from 'q';
 import bcrypt from 'bcrypt-nodejs';
 import dateFormat from 'dateformat';
-// import {Utils} from '../crossenv/utils'; //TODO: Make this work and delete local const UTILS.
 
 const C = {
     MOST_LIKED: {
@@ -267,14 +266,6 @@ const dbClient = function() : Object {
         }
     }
 }();
-
-const UTILS = {
-    camelCase(s : string) : string {
-        return (s||'').toLowerCase().replace(/(\b|_)\w/g, function(m) {
-            return m.toUpperCase().replace(/_/,' ');
-        });
-    }
-};
 
 dbClient.connect("quotable-dev");
 const app = express();

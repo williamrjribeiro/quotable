@@ -1,5 +1,5 @@
 /* @flow */
-var Utils = {
+const Utils = {
     camelCase(s: string): string {
         return (s||'').toLowerCase().replace(/(\b|_)\w/g, function(m) {
             return m.toUpperCase().replace(/_/,' ');
@@ -9,4 +9,4 @@ var Utils = {
         return (s||'').toLowerCase().replace(/ /g,"_");
     }
 };
- export default Utils;
+export default Utils;

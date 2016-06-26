@@ -2,7 +2,7 @@
 import angular from 'angular';
 import 'angular-ui-router';
 import ApiService from './apiservice.js';
-import BaseStateCtrl from './basestatectrl.js';
+import BaseStateCtrl from './controllers/basestatectrl.js';
 import AppCtrl from './controllers/appctrl.js';
 import ToppersCtrl from './controllers/toppersctrl.js';
 import SignUpCtrl from './controllers/signupctrl.js';
@@ -12,7 +12,7 @@ import AuthorCtrl from './controllers/authorctrl.js';
 import SourceCtrl from './controllers/sourcectrl.js';
 import AccessViewCtrl from './controllers/accessviewctrl.js';
 import LikesViewCtrl from './controllers/likesviewctrl.js';
-import Utils from '../crossenv/utils';
+import Utils from '../crossenv/utils.js';
 
 angular.module('quotable', ['ui.router'] )
 .service('ApiService', ApiService)
