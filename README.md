@@ -4,7 +4,11 @@ Just `npm install` on your terminal and go grab a coffee.
 
 Stack
 ----
-*MEAN* stack project coded with *JavaScript ES6*, tested with *Jasmine* and built with *Gulp*. This is yet another learning project so don't therefore there's way too much hand-coded parts. I really like the concept of the app so slowly I'll build it into a full featured service.
+*MEAN* stack project coded with *JavaScript ES6*, tested with *Jasmine (TBD)* and built with *Gulp*.
+
+This is yet another learning project therefore there's way too much hand-coded parts.
+
+I really like the concept of the app so slowly I'll build it into a full featured service.
 
 Spotted a bug? Wanna help? All contributions are more than welcome!
 
