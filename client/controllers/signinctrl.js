@@ -1,6 +1,10 @@
 /*@flow*/
 export default class SignInCtrl {
-    constructor($rootScope, $state, ApiService){
+    _$rootScope: Object;
+    _$state: Function;
+    _ApiService: Object;
+    credentials: Object;
+    constructor($rootScope: Object, $state: Function, ApiService: Object){
         'ngInject';
         console.log("[SignInCtrl]");
         this._$rootScope = $rootScope;
@@ -16,7 +20,7 @@ export default class SignInCtrl {
         });
     }
 
-    _onCredentials(resp) : void {
+    _onCredentials(resp: Object) : void {
         console.log("[SignInCtrl._onCredentials] data:", resp.data);
         this._$rootScope.userCredentials = resp.data.user;
         this._$rootScope.selectedUser = resp.data.user;

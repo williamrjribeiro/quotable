@@ -1,6 +1,13 @@
 /*@flow*/
 export default class ProfileCtrl {
-    constructor($rootScope, $stateParams, ApiService, BaseStateCtrl){
+    _$rootScope: Object;
+    _$stateParams: Object;
+    _ApiService: Object;
+    _BaseStateCtrl: Object;
+    user: Object;
+    loadingContribs: boolean;
+    loadingLikes: boolean;
+    constructor($rootScope: Object, $stateParams: Object, ApiService: Object, BaseStateCtrl: Object){
         'ngInject';
         console.log("[ProfileCtrl]");
         this._$rootScope = $rootScope;
@@ -16,11 +23,11 @@ export default class ProfileCtrl {
 
         this.loadingContribs = true;
         //ApiService.getContributionsByUser(userId).then(this._onContributions.bind(this)).catch(this._onError);
-        ApiService.getContributionsByUser(userId).then(this._onLoaded.bind(this,'loadingContribs','contributions')).catch(this._onError);
+        ApiService.getContributionsByUser(userId).then(this._onLoaded.bind(this, this, 'loadingContribs','contributions')).catch(this._onError);
 
         this.loadingLikes = true;
         //ApiService.getUserLikes(userId).then(this._onUserLikes.bind(this)).catch(this._onError);
-        ApiService.getUserLikes(userId).then(this._onLoaded.bind(this,'loadingLikes','userLikes')).catch(this._onError);
+        ApiService.getUserLikes(userId).then(this._onLoaded.bind(this, this, 'loadingLikes','userLikes')).catch(this._onError);
     }
 
     _onUser(resp : Object) : void {
@@ -29,11 +36,11 @@ export default class ProfileCtrl {
         this._$rootScope.selectedUser = resp.data;
     }
 
-    _onLoaded(propFlag : string, propLoaded : string, resp : Object) : void {
+    _onLoaded(obj:Object, propFlag : string, propLoaded : string, resp : Object) : void {
         console.log(`[ProfileCtrl._onLoaded] propFlag: ${propFlag}, propLoaded: ${propLoaded}, data.legth: ${resp.data.length}`);
-        this[propLoaded] = resp.data;
+        obj[propLoaded] = resp.data;
         if(propFlag)
-            this[propFlag] = false;
+            obj[propFlag] = false;
     }
 
     _onError(err : Object) : void {

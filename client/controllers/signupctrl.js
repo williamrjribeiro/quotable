@@ -1,6 +1,9 @@
 /*@flow*/
 export default class SignUpCtrl {
-    constructor($rootScope, $state, ApiService){
+    _$rootScope: Object;
+    _$state: Function;
+    _ApiService: Object;
+    constructor($rootScope: Object, $state: Function, ApiService: Object){
         console.log("[SignUpCtrl]");
         this._$rootScope = $rootScope;
         this._$state = $state;

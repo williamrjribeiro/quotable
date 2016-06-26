@@ -1,6 +1,15 @@
 /*@flow*/
 export default class LikesViewCtrl {
-    constructor($rootScope, ApiService){
+    _$rootScope: Object;
+    _ApiService: Object;
+    val: number;
+    signedIn: boolean;
+    hasLiked: boolean;
+    likeLabel: string;
+    likeToggle: string;
+    label: string;
+    quoteId: string;
+    constructor($rootScope: Object, ApiService: Object){
         'ngInject';
         //console.log(`[LikesViewCtrl] val: ${this.val}, quoteId: ${this.quoteId}, hasLiked: ${this.hasLiked}`);
         this._$rootScope = $rootScope;
@@ -12,7 +21,7 @@ export default class LikesViewCtrl {
     }
 
     toggleLike() : void {
-        console.log('[LikesController.toggleLike] quote_id:', this.quote_id,", hasLiked:", this.hasLiked);
+        console.log('[LikesController.toggleLike] quoteId:', this.quoteId,", hasLiked:", this.hasLiked);
         const action = this.hasLiked ? "unlike" : "like";
         this._ApiService
             .toggleLike(this.quoteId, this._$rootScope.userCredentials._id, action)

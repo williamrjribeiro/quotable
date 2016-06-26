@@ -1,6 +1,4 @@
-/* @flow */
-"use strict";
-
+/*@flow*/
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
@@ -20,7 +18,7 @@ const C = {
     }
 };
 
-const dbClient = function(){
+const dbClient = function() : Object {
     const _client = mongo.MongoClient;
     const _dbUrl = "mongodb://localhost:27017/";
     let _db;
@@ -52,7 +50,7 @@ const dbClient = function(){
                 }
             });
         },
-        mostLiked(target:string, limit=3) : Object {
+        mostLiked(target:string, limit : number =3) : Object {
             console.log("[dbClient.mostLiked] target:", target,", limit:", limit);
             let deferred = Q.defer();
             if(target === C.MOST_LIKED.AUTHORS){
@@ -116,7 +114,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getQuotesBySource(sourceId:string, limit=20) : Object {
+        getQuotesBySource(sourceId:string, limit : number =20) : Object {
             console.log("[dbClient.getQuotesBySource] sourceId:", sourceId,", limit:", limit);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
@@ -126,7 +124,7 @@ const dbClient = function(){
             ]).toArray(_resolver.bind(this, deferred));
             return deferred.promise;
         },
-        getQuotesByAuthor(authorId:string, limit=20) : Object {
+        getQuotesByAuthor(authorId:string, limit : number =20) : Object {
             console.log("[dbClient.getQuotesByAuthor] authorId:", authorId,", limit:", limit);
             let deferred = Q.defer();
             _db.collection('quotes').aggregate([
@@ -144,7 +142,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getContributionsByUser(userId:string, limit=20) : Object {
+        getContributionsByUser(userId:string, limit : number =20) : Object {
             console.log("[dbClient.getContributionsByUser] userId:", userId);
             let deferred = Q.defer();
             _db.collection('contributions').aggregate([
@@ -178,7 +176,7 @@ const dbClient = function(){
             });
             return deferred.promise;
         },
-        getUserLikes(userId:string,limit=20) : Object {
+        getUserLikes(userId:string,limit : number =20) : Object {
             console.log("[dbClient.getUserLikes] userId:",userId,", limit:",limit);
             const deferred = Q.defer();
             _db.collection('likes').aggregate([

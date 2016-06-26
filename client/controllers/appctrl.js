@@ -1,6 +1,7 @@
 /*@flow*/
 export default class AppCtrl{
-    constructor($rootScope){
+    _$rootScope: Object;
+    constructor($rootScope : Object){
         'ngInject';
         console.log("[AppCtrl]");
         this._$rootScope = $rootScope;

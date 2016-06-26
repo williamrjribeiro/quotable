@@ -2,7 +2,18 @@
 import Utils from '../../crossenv/utils';
 
 export default class ToppersCtrl{
-    constructor($rootScope, ApiService, BaseStateCtrl){
+    _$rootScope: Object;
+    _ApiService: Object;
+    _BaseStateCtrl: Object;
+    loadingA: boolean;
+    loadingB: boolean;
+    loadingC: boolean;
+    loadingD: boolean;
+    knownAuthors: Array<Object>;
+    knownSources: Array<Object>;
+    unsourcedQuotes: Array<Object>;
+    mysteriousQuotes: Array<Object>;
+    constructor($rootScope: Object, ApiService: Object, BaseStateCtrl: Object){
         'ngInject';
         console.log("[ToppersCtrl]");
         this._$rootScope = $rootScope;
@@ -28,14 +39,14 @@ export default class ToppersCtrl{
         resp.data.map((item) => {
             item.name = Utils.camelCase(item._id);
         });
-        this._doneLoading("loadingA","knownAuthors", resp.data);
+        this._doneLoading(this, "loadingA","knownAuthors", resp.data);
     }
 
     _onMostLikedSources(resp : Object) : void {
         resp.data.map((item) => {
             item.title = Utils.camelCase(item._id);
         });
-        this._doneLoading("loadingB","knownSources", resp.data);
+        this._doneLoading(this, "loadingB","knownSources", resp.data);
     }
 
     _onMostLikedUnsourced(resp : Object) : void {
@@ -46,27 +57,28 @@ export default class ToppersCtrl{
         // TODO: Refactor this to be more reusable and use it everywhere.
         if(this._$rootScope.userCredentials){
             this._ApiService.findUserLikes(this._$rootScope.userCredentials._id, quotes).then((foundLikes) => {
-                this._doneLoading("loadingC","unsourcedQuotes", quotes);
+                this._doneLoading(this, "loadingC","unsourcedQuotes", quotes);
             })
         }
         else
-            this._doneLoading("loadingC","unsourcedQuotes", quotes);
+            this._doneLoading(this, "loadingC","unsourcedQuotes", quotes);
     }
 
     _onMostLikedMysterious(resp : Object) : void {
         let quotes = resp.data;
+        let vm = this;
         if(this._$rootScope.userCredentials){
             this._ApiService.findUserLikes(this._$rootScope.userCredentials._id, quotes).then((foundLikes) => {
-                this._doneLoading("loadingD","mysteriousQuotes", quotes);
+                this._doneLoading(vm, "loadingD","mysteriousQuotes", quotes);
             })
         }
         else
-            this._doneLoading("loadingD","mysteriousQuotes", quotes);
+            this._doneLoading(vm, "loadingD","mysteriousQuotes", quotes);
     }
 
-    _doneLoading(loading:string, collection:string, data) : void {
+    _doneLoading(obj:Object, loading:string, collection:string, data: Array<Object>) : void {
         console.log("[ToppersCtrl._doneLoading] loading: ", loading, ", collection: ", collection, ", data.length:", data.length);
-        this[loading] = false;
-        this[collection] = data;
+        obj[loading] = false;
+        obj[collection] = data;
     }
 }

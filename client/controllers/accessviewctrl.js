@@ -1,6 +1,8 @@
 /*@flow*/
 export default class AccessViewCtrl {
-    constructor($rootScope, $state){
+    _$rootScope: Object;
+    _$state: Function;
+    constructor($rootScope : Object, $state : Function){
         'ngInject';
         console.log("[AccessViewCtrl]");
         this._$rootScope = $rootScope;

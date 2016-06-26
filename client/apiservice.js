@@ -1,5 +1,8 @@
 /* @flow */
 export default class ApiService {
+    _$http: Function;
+    _$rootScope: Object;
+    _$q: Function;
     constructor($http : Function , $q  : Function, $rootScope : Object){
         'ngInject';
         console.log("[ApiService] $q:", typeof $q,", $http:", typeof $http,", $rootScope:", typeof $rootScope);
@@ -8,7 +11,7 @@ export default class ApiService {
         this._$q = $q;
     }
 
-    mostLiked (collectionName="mysterious",limit=3) : Object {
+    mostLiked (collectionName  : string = "mysterious", limit : number = 3) : Object {
         console.log("[ApiService.mostLiked] collectionName: " + collectionName + ', limit: ' + limit);
         /* Most Liked URL Pattern
            /api/mostLiked/authors
@@ -42,7 +45,7 @@ export default class ApiService {
         return this._$http.get(`/api/users/${userId}`);
     }
 
-    getUserLikes(userId : string, limit=50) : Object {
+    getUserLikes(userId : string, limit : number =50) : Object {
         console.log("[ApiService.getUser] userId:",userId);
         return this._$http.get(`/api/users/${userId}/likes?limit=${limit}`);
     }
@@ -52,7 +55,7 @@ export default class ApiService {
         return this._$http.get(`/api/authors/${authorId}`);
     }
 
-    getQuotesBySource(sourceId : string, limit=20) : Object {
+    getQuotesBySource(sourceId : string, limit : number =20) : Object {
         console.log("[ApiService.getQuotesBySource] sourceId:",sourceId);
         // Testing $q to add keep loadedQuotes on the this._$rootScope
         let deferred = this._$q.defer();
@@ -65,7 +68,7 @@ export default class ApiService {
         return deferred.promise;
     }
 
-    getQuotesByAuthor(authorId : string, limit=20) : Object {
+    getQuotesByAuthor(authorId : string, limit : number =20) : Object {
         console.log("[ApiService.getQuotesByAuthor] authorId:",authorId);
         // Testing $http.transformResponse to add keep loadedQuotes on the this._$rootScope
         return this._$http({
@@ -78,7 +81,7 @@ export default class ApiService {
         });
     }
 
-    getContributionsByUser(userId : string, limit=20) : Object {
+    getContributionsByUser(userId : string, limit : number =20) : Object {
         console.log("[ApiService.getContributionsByUser] userId:",userId);
         return this._$http.get(`/api/users/${userId}/contributions?limit=${limit}`);
     }
@@ -98,7 +101,7 @@ export default class ApiService {
         return this._$http.post(`/api/quotes/${quoteId}/like`, {userId: userId, action: action});
     }
 
-    findUserLikes(userId:string, quotes) : Object {
+    findUserLikes(userId:string, quotes : Array<Object>) : Object {
         console.log("[ApiService.findUserLikes] userId:",userId,", quotes.length:", quotes.length);
         let deferred = this._$q.defer();
         let quoteIds = [];
@@ -122,7 +125,7 @@ export default class ApiService {
         return deferred.promise;
     }
 
-    _appendTransform(defaults, transform) {
+    _appendTransform(defaults : Array<Object>, transform : Function) : Array<Object> {
         //console.log("[ApiService._appendTransform]");
         // We can't guarantee that the default transformation is an array
         defaults = Array.isArray(defaults) ? defaults : [defaults];

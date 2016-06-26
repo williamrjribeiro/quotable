@@ -34,12 +34,11 @@ const PATHS = {
 };
 
 gulp.task('default', done => {
-    run('clean',['build-server','transpile'],['copy-client','copy-bootstrap'],'watch', done);
+    run('clean',['build-server','transpile'],['copy-client','copy-bootstrap'],'start-server','watch', done);
 });
 
 gulp.task('build-server', done => {
-    //run('flow', 'babel','start-server', done);
-    run('babel','start-server', done);
+    run('flow', 'babel', done);
 });
 
 gulp.task('transpile', () => {

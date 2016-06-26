@@ -1,5 +1,7 @@
 /* @flow */
 export default class BaseStateCtrl {
+    _$rootScope: Object;
+    _$state: Function;
     constructor($state : Function , $rootScope : Object){
         'ngInject';
         console.log("[BaseStateCtrl] $state:", typeof $state,", $rootScope:", typeof $rootScope);

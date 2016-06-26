@@ -1,6 +1,14 @@
 /*@flow*/
 export default class AuthorCtrl {
-    constructor($rootScope, $stateParams, ApiService, BaseStateCtrl){
+    _$rootScope: Object;
+    _$stateParams: Object;
+    _ApiService: Object;
+    _BaseStateCtrl: Object;
+    author: Object;
+    unsourcedQuotes: Array<Object>;
+    loadingQuotes: boolean;
+    authorId: string;
+    constructor($rootScope : Object, $stateParams : Object, ApiService: Object, BaseStateCtrl: Object){
         'ngInject';
         console.log("[AuthorCtrl]");
         this._$rootScope = $rootScope;

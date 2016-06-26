@@ -1,6 +1,14 @@
 /*@flow*/
 export default class SourceCtrl {
-    constructor($rootScope, $stateParams, ApiService, BaseStateCtrl){
+    _$rootScope: Object;
+    _$stateParams: Object;
+    _ApiService: Object;
+    _BaseStateCtrl: Object;
+    loading: boolean;
+    quotes: Array<Object>;
+    author: Object;
+    source: Object;
+    constructor($rootScope : Object, $stateParams : Object, ApiService: Object, BaseStateCtrl: Object){
         'ngInject';
         console.log("[SourceCtrl]");
         this._$rootScope = $rootScope;
@@ -11,7 +19,7 @@ export default class SourceCtrl {
         const authorId = $stateParams.authorId;
 
         this.loading = true;
-        this.quotes = null;
+        this.quotes = [];
         this.author = $rootScope.selectedAuthor || null;
         this.source = $rootScope.selectedSource || null;
 
@@ -51,7 +59,7 @@ export default class SourceCtrl {
             this._onUserLikes(quotes);
     }
 
-    _onUserLikes(data : Object) : void {
+    _onUserLikes(data : Array<Object>) : void {
         console.log("[SourceCtrl._onUserLikes] data.length:",data.length);
         this.quotes = data;
         this.loading = false;
